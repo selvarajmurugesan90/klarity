@@ -1,0 +1,41 @@
+# Build outputs
+bin/
+web/dist/
+web/node_modules/
+dist/
+internal/assets/web/
+
+# Go
+*.test
+*.out
+vendor/
+tmp/
+go.sum
+
+# Secrets & credentials
+.env
+.env.*
+*.kubeconfig
+kubeconfig
+*-kubeconfig.yaml
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Test coverage
+coverage.out
+coverage.html
+
+# Claude Code — private AI assistant context (not for public repo)
+CLAUDE.md
+.claude/
