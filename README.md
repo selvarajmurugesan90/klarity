@@ -2,8 +2,6 @@
 
 <br />
 
-<img src="docs/assets/logo.png" alt="Klarity" width="72" />
-
 # Klarity
 
 ### Enterprise Kubernetes Observability Dashboard
