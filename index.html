@@ -1,674 +1,1122 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Klarity — Enterprise Kubernetes Observability Dashboard</title>
-  <meta name="description" content="Read-only Kubernetes dashboard with auto-discovery, GitOps integration, live logs, web terminal, and internal user management. Free and open source.">
-  <meta property="og:title" content="Klarity — Enterprise Kubernetes Observability Dashboard">
-  <meta property="og:description" content="Read-only by design. GitOps-first. Auto-discovers 60+ resource types. Free and open source.">
-  <meta property="og:image" content="https://raw.githubusercontent.com/selvarajmurugesan90/klarity/main/docs/assets/screenshots/Klarity-Overview-Page.jpg">
-  <meta property="og:type" content="website">
-  <meta name="twitter:card" content="summary_large_image">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><circle cx='100' cy='100' r='96' fill='%230f172a' stroke='%233b82f6' stroke-width='4'/><circle cx='100' cy='100' r='40' fill='%231d4ed8'/><text x='100' y='118' font-family='system-ui' font-size='56' font-weight='800' fill='white' text-anchor='middle'>K</text></svg>">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <meta name="description" content="Open-source enterprise Kubernetes observability dashboard. Read-only, GitOps-first, auto-discovery of 60+ resource types. Free. Self-hosted. Beautiful." />
+  <meta name="keywords" content="kubernetes dashboard, k8s observability, gitops, argocd, flux, helm, open source" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Klarity — Enterprise Kubernetes Observability" />
+  <meta property="og:description" content="Open-source enterprise Kubernetes observability dashboard. Read-only, GitOps-first, 60+ resource types auto-discovered." />
+  <meta property="og:image" content="https://raw.githubusercontent.com/selvarajmurugesan90/klarity/main/docs/assets/screenshots/Klarity-Overview-Page.jpg" />
+  <meta property="og:url" content="https://selvarajmurugesan90.github.io/klarity" />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+
   <style>
-    * { font-family: 'Inter', system-ui, sans-serif; }
+    /* ─── Design Tokens ─────────────────────────────────────────── */
+    :root {
+      --bg: #020409;
+      --bg-1: #0a0f1e;
+      --bg-2: #0f172a;
+      --bg-3: #1e293b;
+      --border: rgba(99,179,237,0.12);
+      --border-bright: rgba(99,179,237,0.25);
+      --text: #e2e8f0;
+      --text-muted: #8892a4;
+      --text-dim: #4a5568;
+      --blue: #60a5fa;
+      --blue-bright: #93c5fd;
+      --indigo: #818cf8;
+      --purple: #a78bfa;
+      --cyan: #22d3ee;
+      --green: #4ade80;
+      --amber: #fbbf24;
+      --red: #f87171;
+      --grad-hero: linear-gradient(135deg, #60a5fa 0%, #818cf8 50%, #a78bfa 100%);
+      --grad-card: linear-gradient(135deg, rgba(96,165,250,0.06) 0%, rgba(167,139,250,0.06) 100%);
+      --font: 'Inter', system-ui, sans-serif;
+      --mono: 'JetBrains Mono', 'Fira Code', monospace;
+      --radius: 12px;
+      --radius-lg: 20px;
+      --glow: 0 0 60px rgba(96,165,250,0.15), 0 0 120px rgba(167,139,250,0.08);
+    }
+
+    /* ─── Reset ──────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+    body { font-family: var(--font); background: var(--bg); color: var(--text); overflow-x: hidden; line-height: 1.6; }
+    a { color: inherit; text-decoration: none; }
+    img { display: block; max-width: 100%; }
+    button { font-family: var(--font); cursor: pointer; border: none; background: none; }
+
+    /* ─── Animated background mesh ───────────────────────────────── */
+    .bg-mesh {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      overflow: hidden;
+    }
+    .bg-mesh::before,
+    .bg-mesh::after,
+    .bg-mesh span {
+      content: '';
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(120px);
+      opacity: 0.07;
+      animation: drift 20s ease-in-out infinite alternate;
+    }
+    .bg-mesh::before {
+      width: 800px; height: 800px;
+      background: radial-gradient(circle, #60a5fa, transparent);
+      top: -200px; left: -200px;
+    }
+    .bg-mesh::after {
+      width: 700px; height: 700px;
+      background: radial-gradient(circle, #a78bfa, transparent);
+      bottom: -200px; right: -200px;
+      animation-delay: -10s;
+    }
+    .bg-mesh span {
+      display: block;
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, #22d3ee, transparent);
+      top: 40%; left: 40%;
+      animation-delay: -5s;
+    }
+    @keyframes drift {
+      from { transform: translate(0, 0) scale(1); }
+      to   { transform: translate(80px, 60px) scale(1.1); }
+    }
+
+    /* ─── Layout ─────────────────────────────────────────────────── */
+    main { position: relative; z-index: 1; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+    .section { padding: 100px 0; }
+    .section-sm { padding: 64px 0; }
+
+    /* ─── Typography ─────────────────────────────────────────────── */
+    .display { font-size: clamp(3rem, 7vw, 5.5rem); font-weight: 900; letter-spacing: -0.04em; line-height: 1.05; }
+    .h1 { font-size: clamp(2rem, 4vw, 3.5rem); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; }
+    .h2 { font-size: clamp(1.6rem, 3vw, 2.5rem); font-weight: 700; letter-spacing: -0.02em; }
+    .h3 { font-size: 1.2rem; font-weight: 600; }
+    .label { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--blue); }
     .gradient-text {
-      background: linear-gradient(135deg, #93c5fd 0%, #3b82f6 45%, #818cf8 100%);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      background: var(--grad-hero);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
-    .hero-radial {
-      background: radial-gradient(ellipse 90% 60% at 50% -5%, rgba(37,99,235,0.2) 0%, transparent 65%),
-                  radial-gradient(ellipse 40% 30% at 80% 20%, rgba(99,102,241,0.08) 0%, transparent 60%);
+
+    /* ─── Navbar ─────────────────────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: rgba(2,4,9,0.8);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      transition: all 0.3s;
     }
-    .grid-bg {
-      background-image: linear-gradient(rgba(59,130,246,0.04) 1px, transparent 1px),
-                        linear-gradient(90deg, rgba(59,130,246,0.04) 1px, transparent 1px);
-      background-size: 64px 64px;
+    .nav-inner {
+      max-width: 1200px; margin: 0 auto; padding: 0 24px;
+      height: 64px;
+      display: flex; align-items: center; justify-content: space-between;
     }
-    .card { transition: transform 0.25s ease, box-shadow 0.25s ease; }
-    .card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(59,130,246,0.13); }
-    .tab-active { background: rgba(59,130,246,0.12) !important; border-color: rgba(59,130,246,0.5) !important; color: #93c5fd !important; }
-    .tab-inactive { color: #94a3b8; }
-    .tab-inactive:hover { color: #e2e8f0; background: rgba(255,255,255,0.04); }
-    pre { scrollbar-width: thin; scrollbar-color: #334155 transparent; }
-    pre::-webkit-scrollbar { height: 5px; }
-    pre::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
-    .screenshot-frame {
-      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-      border: 1px solid rgba(59,130,246,0.2);
-      box-shadow: 0 0 0 1px rgba(255,255,255,0.03), 0 40px 80px rgba(0,0,0,0.6), 0 0 80px rgba(59,130,246,0.08);
+    .nav-logo { display: flex; align-items: center; gap: 10px; }
+    .nav-logo img { width: 28px; height: 28px; }
+    .nav-logo span { font-size: 1.1rem; font-weight: 700; letter-spacing: -0.01em; }
+    .nav-links { display: flex; align-items: center; gap: 8px; }
+    .nav-link {
+      padding: 6px 14px; border-radius: 8px;
+      font-size: 0.875rem; font-weight: 500; color: var(--text-muted);
+      transition: all 0.2s;
     }
-    @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
-    .float { animation: float 6s ease-in-out infinite; }
-    @keyframes glow { 0%,100% { opacity: 0.4; } 50% { opacity: 0.8; } }
-    .glow-pulse { animation: glow 3s ease-in-out infinite; }
-    html { scroll-behavior: smooth; }
-    .prose-code { font-family: 'Fira Code', 'Cascadia Code', monospace; }
+    .nav-link:hover { color: var(--text); background: rgba(255,255,255,0.06); }
+    .nav-cta {
+      padding: 8px 20px; border-radius: 8px;
+      font-size: 0.875rem; font-weight: 600;
+      background: var(--blue); color: #000;
+      transition: all 0.2s;
+    }
+    .nav-cta:hover { background: var(--blue-bright); transform: translateY(-1px); }
+    @media (max-width: 640px) {
+      .nav-links .nav-link { display: none; }
+    }
+
+    /* ─── Hero ───────────────────────────────────────────────────── */
+    .hero {
+      padding: 160px 0 100px;
+      text-align: center;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 6px 16px; border-radius: 100px;
+      background: rgba(96,165,250,0.1);
+      border: 1px solid rgba(96,165,250,0.2);
+      font-size: 0.8rem; font-weight: 600; color: var(--blue);
+      margin-bottom: 32px;
+    }
+    .hero-badge-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse 2s ease-in-out infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+    .hero h1 { margin-bottom: 24px; }
+    .hero-sub {
+      max-width: 640px; margin: 0 auto 48px;
+      font-size: 1.2rem; color: var(--text-muted); font-weight: 400; line-height: 1.7;
+    }
+    .hero-ctas { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin-bottom: 24px; }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 14px 28px; border-radius: 10px;
+      font-size: 1rem; font-weight: 600; color: #000;
+      background: var(--grad-hero);
+      box-shadow: 0 0 40px rgba(96,165,250,0.3);
+      transition: all 0.3s;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 60px rgba(96,165,250,0.4); }
+    .btn-secondary {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 14px 28px; border-radius: 10px;
+      font-size: 1rem; font-weight: 600; color: var(--text);
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border-bright);
+      transition: all 0.3s;
+    }
+    .btn-secondary:hover { background: rgba(255,255,255,0.09); border-color: rgba(99,179,237,0.4); transform: translateY(-2px); }
+    .hero-meta { font-size: 0.8rem; color: var(--text-dim); }
+
+    /* ─── Stats strip ────────────────────────────────────────────── */
+    .stats-strip {
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      background: rgba(255,255,255,0.02);
+      padding: 40px 0;
+    }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 2px; }
+    .stat-item { text-align: center; padding: 24px; }
+    .stat-num { font-size: 2.5rem; font-weight: 800; letter-spacing: -0.03em; }
+    .stat-label { font-size: 0.8rem; color: var(--text-muted); font-weight: 500; margin-top: 4px; letter-spacing: 0.05em; text-transform: uppercase; }
+
+    /* ─── Hero screenshot ────────────────────────────────────────── */
+    .hero-screenshot { margin-top: 80px; }
+    .screenshot-browser {
+      background: var(--bg-2);
+      border: 1px solid var(--border-bright);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--glow), 0 64px 120px rgba(0,0,0,0.6);
+    }
+    .browser-bar {
+      background: var(--bg-3);
+      padding: 12px 16px;
+      display: flex; align-items: center; gap: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .browser-dots { display: flex; gap: 6px; }
+    .browser-dots span { width: 10px; height: 10px; border-radius: 50%; }
+    .browser-dots span:nth-child(1) { background: #ff5f57; }
+    .browser-dots span:nth-child(2) { background: #febc2e; }
+    .browser-dots span:nth-child(3) { background: #28c840; }
+    .browser-addr {
+      flex: 1; background: rgba(255,255,255,0.06); border-radius: 6px;
+      padding: 5px 12px; font-family: var(--mono); font-size: 0.75rem; color: var(--text-muted);
+      border: 1px solid var(--border);
+    }
+    .browser-body img { width: 100%; display: block; cursor: zoom-in; transition: transform 0.3s; }
+    .browser-body img:hover { transform: scale(1.01); }
+
+    /* ─── Section header ─────────────────────────────────────────── */
+    .section-header { text-align: center; margin-bottom: 64px; }
+    .section-header p { margin-top: 16px; font-size: 1.1rem; color: var(--text-muted); max-width: 560px; margin-left: auto; margin-right: auto; line-height: 1.7; }
+
+    /* ─── Features grid ──────────────────────────────────────────── */
+    .features-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 2px; }
+    .feature-card {
+      background: var(--grad-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+    .feature-card::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(96,165,250,0.04) 0%, transparent 60%);
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .feature-card:hover { border-color: var(--border-bright); transform: translateY(-4px); box-shadow: 0 20px 60px rgba(0,0,0,0.4); }
+    .feature-card:hover::before { opacity: 1; }
+    .feature-icon {
+      width: 48px; height: 48px; border-radius: 12px; margin-bottom: 20px;
+      background: rgba(96,165,250,0.1); border: 1px solid rgba(96,165,250,0.2);
+      display: flex; align-items: center; justify-content: center; font-size: 1.4rem;
+    }
+    .feature-card h3 { margin-bottom: 10px; font-size: 1.05rem; }
+    .feature-card p { font-size: 0.9rem; color: var(--text-muted); line-height: 1.65; }
+    .feature-card .tag {
+      display: inline-block; margin-top: 14px;
+      padding: 3px 10px; border-radius: 100px;
+      font-size: 0.7rem; font-weight: 600; letter-spacing: 0.05em;
+    }
+    .tag-blue { background: rgba(96,165,250,0.15); color: var(--blue); }
+    .tag-purple { background: rgba(167,139,250,0.15); color: var(--purple); }
+    .tag-green { background: rgba(74,222,128,0.15); color: var(--green); }
+    .tag-cyan { background: rgba(34,211,238,0.15); color: var(--cyan); }
+
+    /* ─── Screenshots ─────────────────────────────────────────────── */
+    .screenshots-section { background: linear-gradient(180deg, var(--bg) 0%, var(--bg-1) 50%, var(--bg) 100%); }
+    .screenshots-main { margin-bottom: 40px; }
+    .screenshots-caption {
+      text-align: center; margin-top: 20px;
+      font-size: 0.9rem; color: var(--text-muted);
+    }
+    .screenshots-caption strong { color: var(--text); }
+    .screenshots-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+    .screenshot-thumb {
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      cursor: zoom-in;
+      transition: all 0.3s;
+      background: var(--bg-2);
+    }
+    .screenshot-thumb:hover { border-color: var(--border-bright); transform: translateY(-4px); box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+    .screenshot-thumb img { width: 100%; display: block; transition: transform 0.4s; }
+    .screenshot-thumb:hover img { transform: scale(1.03); }
+    .screenshot-label {
+      padding: 14px 16px;
+      font-size: 0.83rem; font-weight: 600;
+      color: var(--text-muted);
+      background: var(--bg-2);
+      border-top: 1px solid var(--border);
+    }
+
+    /* ─── Lightbox ───────────────────────────────────────────────── */
+    .lightbox {
+      display: none; position: fixed; inset: 0; z-index: 1000;
+      background: rgba(0,0,0,0.92);
+      backdrop-filter: blur(16px);
+      align-items: center; justify-content: center;
+      padding: 40px;
+      cursor: zoom-out;
+    }
+    .lightbox.active { display: flex; }
+    .lightbox img {
+      max-width: 100%; max-height: 90vh;
+      border-radius: var(--radius);
+      border: 1px solid var(--border-bright);
+      box-shadow: var(--glow);
+      cursor: default;
+    }
+    .lightbox-close {
+      position: fixed; top: 24px; right: 24px; z-index: 1001;
+      width: 44px; height: 44px; border-radius: 50%;
+      background: rgba(255,255,255,0.1); color: var(--text);
+      font-size: 1.5rem; display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .lightbox-close:hover { background: rgba(255,255,255,0.2); }
+
+    /* ─── Install tabs ───────────────────────────────────────────── */
+    .install-section { background: var(--bg-1); }
+    .install-tabs { display: flex; gap: 4px; margin-bottom: 24px; border-bottom: 1px solid var(--border); padding-bottom: 0; }
+    .install-tab {
+      padding: 10px 20px; border-radius: 8px 8px 0 0;
+      font-size: 0.875rem; font-weight: 600; color: var(--text-muted);
+      cursor: pointer; transition: all 0.2s;
+      border: 1px solid transparent;
+      margin-bottom: -1px;
+    }
+    .install-tab:hover { color: var(--text); }
+    .install-tab.active { color: var(--blue); background: var(--bg-2); border-color: var(--border); border-bottom-color: var(--bg-2); }
+    .install-panel { display: none; }
+    .install-panel.active { display: block; }
+    .code-block {
+      position: relative;
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .code-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 16px;
+      background: var(--bg-3);
+      border-bottom: 1px solid var(--border);
+      font-family: var(--mono); font-size: 0.75rem; color: var(--text-muted);
+    }
+    .copy-btn {
+      padding: 4px 12px; border-radius: 6px;
+      background: rgba(255,255,255,0.08); color: var(--text-muted);
+      font-size: 0.75rem; font-family: var(--font); font-weight: 500;
+      border: 1px solid var(--border); cursor: pointer;
+      transition: all 0.2s;
+    }
+    .copy-btn:hover { background: rgba(255,255,255,0.14); color: var(--text); }
+    .copy-btn.copied { color: var(--green); border-color: rgba(74,222,128,0.3); }
+    pre {
+      padding: 24px; margin: 0;
+      font-family: var(--mono); font-size: 0.82rem; line-height: 1.8;
+      overflow-x: auto;
+      color: var(--text);
+    }
+    .tok-comment { color: var(--text-dim); }
+    .tok-cyan { color: var(--cyan); }
+    .tok-amber { color: var(--amber); }
+
+    /* ─── Comparison table ───────────────────────────────────────── */
+    .compare-table { width: 100%; border-collapse: collapse; }
+    .compare-table th, .compare-table td {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.9rem;
+    }
+    .compare-table th { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-muted); }
+    .compare-table th:not(:first-child), .compare-table td:not(:first-child) { text-align: center; }
+    .compare-table thead tr { border-bottom: 2px solid var(--border-bright); }
+    .compare-table tbody tr:hover { background: rgba(255,255,255,0.02); }
+    .compare-table td:first-child { color: var(--text-muted); font-weight: 500; }
+    .th-klarity { color: var(--blue) !important; }
+    .check-y { color: var(--green); font-size: 1.1rem; }
+    .check-n { color: var(--text-dim); }
+    .check-p { color: var(--amber); font-size: 0.8rem; font-weight: 600; }
+
+    /* ─── Auth providers ─────────────────────────────────────────── */
+    .providers-row {
+      display: flex; flex-wrap: wrap; gap: 12px; justify-content: center;
+      margin-top: 40px;
+    }
+    .provider-badge {
+      display: flex; align-items: center; gap: 8px;
+      padding: 10px 18px; border-radius: 100px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      font-size: 0.83rem; font-weight: 500;
+      color: var(--text-muted);
+      transition: all 0.2s;
+    }
+    .provider-badge:hover { border-color: var(--border-bright); color: var(--text); background: rgba(255,255,255,0.07); }
+
+    /* ─── Architecture ───────────────────────────────────────────── */
+    .arch-section { background: var(--bg-1); }
+    .arch-diagram {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 48px;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 40px;
+      align-items: start;
+    }
+    .arch-col { display: flex; flex-direction: column; gap: 16px; }
+    .arch-box {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+    }
+    .arch-box-title { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 10px; }
+    .arch-box ul { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+    .arch-box li { font-size: 0.78rem; color: var(--text-muted); display: flex; align-items: center; gap: 6px; }
+    .arch-box li::before { content: '·'; color: var(--blue); font-size: 1.2rem; flex-shrink: 0; }
+    @media (max-width: 900px) {
+      .arch-diagram { grid-template-columns: 1fr; padding: 24px; }
+    }
+
+    /* ─── CTA section ────────────────────────────────────────────── */
+    .cta-inner {
+      background: linear-gradient(135deg, rgba(96,165,250,0.08) 0%, rgba(167,139,250,0.08) 100%);
+      border: 1px solid var(--border-bright);
+      border-radius: var(--radius-lg);
+      padding: 80px 40px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .cta-inner::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 60% 50% at 50% 0%, rgba(96,165,250,0.12), transparent);
+      border-radius: inherit;
+    }
+    .cta-inner > * { position: relative; z-index: 1; }
+    .cta-inner h2 { margin-bottom: 20px; }
+    .cta-inner p { color: var(--text-muted); max-width: 480px; margin: 0 auto 40px; font-size: 1.05rem; }
+    .cta-links { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+
+    /* ─── Footer ─────────────────────────────────────────────────── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 64px 0 40px;
+    }
+    .footer-grid { display: grid; grid-template-columns: 2fr repeat(3, 1fr); gap: 40px; margin-bottom: 48px; }
+    .footer-brand img { width: 36px; margin-bottom: 14px; }
+    .footer-brand p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.7; max-width: 240px; }
+    .footer-col h4 { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 16px; }
+    .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .footer-col li a { font-size: 0.875rem; color: var(--text-muted); transition: color 0.2s; }
+    .footer-col li a:hover { color: var(--text); }
+    .footer-bottom {
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;
+      padding-top: 32px; border-top: 1px solid var(--border);
+      font-size: 0.8rem; color: var(--text-dim);
+    }
+    .footer-badges { display: flex; gap: 8px; flex-wrap: wrap; }
+    .footer-badge {
+      padding: 4px 10px; border-radius: 6px;
+      background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+      font-size: 0.7rem; font-weight: 600;
+    }
+    @media (max-width: 768px) {
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+      .footer-brand { grid-column: 1/-1; }
+    }
+    @media (max-width: 480px) {
+      .footer-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ─── Scroll animations ──────────────────────────────────────── */
+    .fade-up { opacity: 0; transform: translateY(32px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .fade-up.visible { opacity: 1; transform: translateY(0); }
+    .fade-up-delay-1 { transition-delay: 0.1s; }
+    .fade-up-delay-2 { transition-delay: 0.2s; }
+
+    /* ─── Divider ─────────────────────────────────────────────────── */
+    .divider { height: 1px; background: linear-gradient(90deg, transparent, var(--border-bright), transparent); }
   </style>
 </head>
-<body class="bg-slate-950 text-slate-200 antialiased overflow-x-hidden">
+<body>
 
-  <!-- ── Navigation ───────────────────────────────────────── -->
-  <header class="fixed top-0 inset-x-0 z-50 border-b border-white/5 bg-slate-950/85 backdrop-blur-xl">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none" class="w-8 h-8 shrink-0">
-          <circle cx="100" cy="100" r="96" fill="#0f172a" stroke="#3b82f6" stroke-width="4"/>
-          <path d="M100 20 L168 60 L168 140 L100 180 L32 140 L32 60 Z" fill="none" stroke="#1e3a5f" stroke-width="2" opacity="0.6"/>
-          <circle cx="100" cy="100" r="40" fill="url(#nav-g)"/>
-          <text x="100" y="118" font-family="system-ui,sans-serif" font-size="56" font-weight="800" fill="white" text-anchor="middle" letter-spacing="-2">K</text>
-          <circle cx="134" cy="72" r="5" fill="#60a5fa"/>
-          <defs><radialGradient id="nav-g" cx="50%" cy="40%" r="60%"><stop offset="0%" stop-color="#1d4ed8"/><stop offset="100%" stop-color="#0f172a"/></radialGradient></defs>
-        </svg>
-        <span class="text-lg font-bold text-white tracking-tight">Klarity</span>
-        <span class="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-950/60 text-blue-300 border border-blue-900/40">v1.0.0</span>
-      </div>
-      <nav class="flex items-center gap-1 sm:gap-2">
-        <a href="https://github.com/selvarajmurugesan90/klarity/blob/main/docs/DEPLOYMENT.md"
-           class="hidden md:block text-sm text-slate-400 hover:text-white transition-colors px-3 py-1.5 rounded-lg hover:bg-white/5 font-medium">Docs</a>
-        <a href="https://github.com/selvarajmurugesan90/klarity/blob/main/CHANGELOG.md"
-           class="hidden md:block text-sm text-slate-400 hover:text-white transition-colors px-3 py-1.5 rounded-lg hover:bg-white/5 font-medium">Changelog</a>
-        <a href="https://github.com/selvarajmurugesan90/klarity/releases"
-           class="hidden sm:block text-sm text-slate-400 hover:text-white transition-colors px-3 py-1.5 rounded-lg hover:bg-white/5 font-medium">Releases</a>
-        <a href="https://github.com/selvarajmurugesan90/klarity"
-           class="flex items-center gap-2 bg-white/8 hover:bg-white/12 text-white text-sm px-3.5 py-2 rounded-lg transition-all border border-white/10 font-semibold ml-1">
-          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
-          GitHub
-        </a>
-      </nav>
+<!-- Animated background mesh -->
+<div class="bg-mesh"><span></span></div>
+
+<!-- ── Lightbox ─────────────────────────────────────────────────── -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <button class="lightbox-close" onclick="closeLightbox()">&#x2715;</button>
+  <img id="lightbox-img" src="" alt="" onclick="event.stopPropagation()" />
+</div>
+
+<!-- ── Navbar ───────────────────────────────────────────────────── -->
+<nav>
+  <div class="nav-inner">
+    <a href="#" class="nav-logo">
+      <img src="https://raw.githubusercontent.com/selvarajmurugesan90/klarity/main/docs/assets/logo.svg" alt="Klarity" onerror="this.style.display='none'" />
+      <span>Klarity</span>
+    </a>
+    <div class="nav-links">
+      <a href="#features" class="nav-link">Features</a>
+      <a href="#screenshots" class="nav-link">Screenshots</a>
+      <a href="#install" class="nav-link">Install</a>
+      <a href="https://github.com/selvarajmurugesan90/klarity" class="nav-link" target="_blank">GitHub</a>
+      <a href="https://github.com/selvarajmurugesan90/klarity/releases" class="nav-cta" target="_blank">Get Started</a>
     </div>
-  </header>
+  </div>
+</nav>
 
-  <!-- ── Hero ─────────────────────────────────────────────── -->
-  <section class="hero-radial grid-bg relative pt-36 pb-20 px-4 sm:px-6 lg:px-8 text-center overflow-hidden">
-    <!-- Decorative blobs -->
-    <div class="absolute top-20 left-1/4 w-96 h-96 bg-blue-600/5 rounded-full blur-3xl pointer-events-none"></div>
-    <div class="absolute top-32 right-1/4 w-64 h-64 bg-indigo-600/5 rounded-full blur-3xl pointer-events-none"></div>
+<main>
 
-    <div class="relative max-w-5xl mx-auto">
-      <!-- Logo -->
-      <div class="flex justify-center mb-8 float">
-        <div class="relative">
-          <div class="absolute inset-0 rounded-full blur-2xl bg-blue-500/20 glow-pulse scale-150"></div>
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none" class="relative w-28 h-28">
-            <circle cx="100" cy="100" r="96" fill="#0f172a" stroke="#3b82f6" stroke-width="4"/>
-            <path d="M100 20 L168 60 L168 140 L100 180 L32 140 L32 60 Z" fill="none" stroke="#1e3a5f" stroke-width="2" opacity="0.7"/>
-            <path d="M100 40 L152 70 L152 130 L100 160 L48 130 L48 70 Z" fill="none" stroke="#2563eb" stroke-width="1.5" opacity="0.4"/>
-            <circle cx="100" cy="100" r="42" fill="#1e3a5f" opacity="0.9"/>
-            <circle cx="100" cy="100" r="40" fill="url(#hero-g)"/>
-            <text x="100" y="118" font-family="system-ui,sans-serif" font-size="56" font-weight="800" fill="white" text-anchor="middle" letter-spacing="-2">K</text>
-            <circle cx="134" cy="72" r="6" fill="#60a5fa"/>
-            <line x1="58" y1="88" x2="72" y2="88" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" opacity="0.8"/>
-            <line x1="58" y1="100" x2="68" y2="100" stroke="#60a5fa" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
-            <line x1="58" y1="112" x2="72" y2="112" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" opacity="0.8"/>
-            <line x1="128" y1="88" x2="142" y2="88" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" opacity="0.8"/>
-            <line x1="132" y1="100" x2="142" y2="100" stroke="#60a5fa" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
-            <line x1="128" y1="112" x2="142" y2="112" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" opacity="0.8"/>
-            <defs><radialGradient id="hero-g" cx="50%" cy="35%" r="65%"><stop offset="0%" stop-color="#2563eb"/><stop offset="100%" stop-color="#0f172a"/></radialGradient></defs>
-          </svg>
+<!-- ── Hero ─────────────────────────────────────────────────────── -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-badge">
+      <span class="hero-badge-dot"></span>
+      v1.0.0 Released &nbsp;&middot;&nbsp; Open Source &nbsp;&middot;&nbsp; Apache 2.0
+    </div>
+
+    <h1 class="display">
+      Kubernetes Observability<br/>
+      <span class="gradient-text">Done Right</span>
+    </h1>
+
+    <p class="hero-sub">
+      Open-source enterprise dashboard for Kubernetes teams. Complete visibility across every resource, real-time metrics, log streaming, GitOps integration &mdash; all read-only, all GitOps-first.
+    </p>
+
+    <div class="hero-ctas">
+      <a href="#install" class="btn-primary">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Install Now &mdash; Free
+      </a>
+      <a href="https://github.com/selvarajmurugesan90/klarity" class="btn-secondary" target="_blank">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+        View on GitHub
+      </a>
+    </div>
+    <p class="hero-meta">Free forever &nbsp;&middot;&nbsp; Self-hosted &nbsp;&middot;&nbsp; No telemetry &nbsp;&middot;&nbsp; No account required</p>
+
+    <!-- Hero main screenshot -->
+    <div class="hero-screenshot fade-up">
+      <div class="screenshot-browser">
+        <div class="browser-bar">
+          <div class="browser-dots"><span></span><span></span><span></span></div>
+          <div class="browser-addr">http://localhost:8080 &mdash; Klarity Dashboard</div>
         </div>
-      </div>
-
-      <!-- Badge -->
-      <div class="inline-flex items-center gap-2 bg-blue-950/60 border border-blue-800/40 rounded-full px-4 py-1.5 text-xs text-blue-300 mb-7 font-semibold tracking-wide">
-        <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
-        Open Source &bull; Apache 2.0 &bull; Kubernetes 1.26+
-      </div>
-
-      <h1 class="text-5xl sm:text-6xl lg:text-7xl font-black text-white leading-[1.05] tracking-tight mb-6">
-        Enterprise Kubernetes<br>
-        <span class="gradient-text">Observability Dashboard</span>
-      </h1>
-
-      <p class="text-lg sm:text-xl text-slate-400 max-w-2xl mx-auto mb-5 leading-relaxed">
-        Read-only by design. GitOps-first. Auto-discovers 60+ resource types, streams live logs,
-        provides web terminal access, and integrates with ArgoCD &amp; Flux CD — <strong class="text-slate-300">zero configuration</strong>.
-      </p>
-
-      <p class="text-base text-blue-400/90 font-semibold italic mb-12">&ldquo;Observe everything. Change nothing.&rdquo;</p>
-
-      <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
-        <a href="#install"
-           class="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-bold px-8 py-4 rounded-xl transition-all shadow-xl shadow-blue-900/40 text-base">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-          Get Started — Free
-        </a>
-        <a href="https://github.com/selvarajmurugesan90/klarity"
-           class="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 bg-white/5 hover:bg-white/10 text-white font-bold px-8 py-4 rounded-xl transition-all border border-white/10 text-base">
-          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
-          View Source
-        </a>
-      </div>
-
-      <!-- Stats bar -->
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-px bg-white/5 rounded-2xl overflow-hidden border border-white/5 max-w-3xl mx-auto">
-        <div class="bg-slate-950 px-6 py-5 text-center">
-          <div class="text-3xl font-extrabold text-white mb-1">60+</div>
-          <div class="text-xs text-slate-500 uppercase tracking-widest font-semibold">Resource Types</div>
-        </div>
-        <div class="bg-slate-950 px-6 py-5 text-center">
-          <div class="text-3xl font-extrabold text-white mb-1">4</div>
-          <div class="text-xs text-slate-500 uppercase tracking-widest font-semibold">Auth Modes</div>
-        </div>
-        <div class="bg-slate-950 px-6 py-5 text-center">
-          <div class="text-3xl font-extrabold text-white mb-1">Zero</div>
-          <div class="text-xs text-slate-500 uppercase tracking-widest font-semibold">Config Needed</div>
-        </div>
-        <div class="bg-slate-950 px-6 py-5 text-center">
-          <div class="text-3xl font-extrabold text-white mb-1">1</div>
-          <div class="text-xs text-slate-500 uppercase tracking-widest font-semibold">Single Binary</div>
+        <div class="browser-body">
+          <img
+            src="https://raw.githubusercontent.com/selvarajmurugesan90/klarity/main/docs/assets/screenshots/Klarity-Overview-Page.jpg"
+            alt="Klarity Cluster Overview Dashboard"
+            onclick="openLightbox(this.src)"
+          />
         </div>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- ── Dashboard Screenshot ──────────────────────────────── -->
-  <section class="py-16 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-6xl mx-auto">
-      <!-- Browser chrome frame — main hero screenshot -->
-      <div class="screenshot-frame rounded-2xl overflow-hidden">
-        <div class="flex items-center gap-2 px-4 py-3 bg-slate-900/80 border-b border-white/5">
-          <div class="flex gap-1.5">
-            <span class="w-3 h-3 rounded-full bg-red-500/70"></span>
-            <span class="w-3 h-3 rounded-full bg-yellow-500/70"></span>
-            <span class="w-3 h-3 rounded-full bg-green-500/70"></span>
-          </div>
-          <div class="flex-1 mx-4">
-            <div class="bg-slate-800 rounded-md px-3 py-1 text-xs text-slate-400 max-w-sm mx-auto text-center font-mono">
-              localhost:8080 — Cluster Overview
-            </div>
-          </div>
-        </div>
-        <img src="https://raw.githubusercontent.com/selvarajmurugesan90/klarity/main/docs/assets/screenshots/Klarity-Overview-Page.jpg"
-             alt="Klarity Cluster Overview Dashboard"
-             class="w-full block">
+<!-- ── Stats strip ───────────────────────────────────────────────── -->
+<div class="stats-strip">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat-item">
+        <div class="stat-num gradient-text" data-count="62">0</div>
+        <div class="stat-label">Resource Types</div>
       </div>
-      <p class="text-center text-xs text-slate-600 mt-3">Cluster Overview — live metrics, workload health, node resource usage, and warning events</p>
-    </div>
-  </section>
-
-  <!-- ── Screenshot Gallery ────────────────────────────────── -->
-  <section class="py-12 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-6xl mx-auto">
-      <h3 class="text-center text-slate-500 text-sm font-semibold uppercase tracking-widest mb-8">More screenshots</h3>
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-
-        <div class="group">
-          <div class="screenshot-frame rounded-xl overflow-hidden">
-            <div class="flex items-center gap-2 px-3 py-2 bg-slate-900/80 border-b border-white/5">
-              <div class="flex gap-1"><span class="w-2 h-2 rounded-full bg-red-500/60"></span><span class="w-2 h-2 rounded-full bg-yellow-500/60"></span><span class="w-2 h-2 rounded-full bg-green-500/60"></span></div>
-              <span class="text-xs text-slate-600 font-mono ml-2">localhost:8080/pods</span>
-            </div>
-            <img src="https://raw.githubusercontent.com/selvarajmurugesan90/klarity/main/docs/assets/screenshots/Klarity-Resources-Pod.jpg"
-                 alt="Pods list with CPU and Memory metrics"
-                 class="w-full block">
-          </div>
-          <p class="text-center text-xs text-slate-600 mt-2">Pods — live CPU &amp; Memory per pod</p>
-        </div>
-
-        <div class="group">
-          <div class="screenshot-frame rounded-xl overflow-hidden">
-            <div class="flex items-center gap-2 px-3 py-2 bg-slate-900/80 border-b border-white/5">
-              <div class="flex gap-1"><span class="w-2 h-2 rounded-full bg-red-500/60"></span><span class="w-2 h-2 rounded-full bg-yellow-500/60"></span><span class="w-2 h-2 rounded-full bg-green-500/60"></span></div>
-              <span class="text-xs text-slate-600 font-mono ml-2">localhost:8080/top</span>
-            </div>
-            <img src="https://raw.githubusercontent.com/selvarajmurugesan90/klarity/main/docs/assets/screenshots/Klarity-Top-Consumers.jpg"
-                 alt="Top Resource Consumers"
-                 class="w-full block">
-          </div>
-          <p class="text-center text-xs text-slate-600 mt-2">Top Resource Consumers — sort by CPU or Memory</p>
-        </div>
-
-        <div class="group">
-          <div class="screenshot-frame rounded-xl overflow-hidden">
-            <div class="flex items-center gap-2 px-3 py-2 bg-slate-900/80 border-b border-white/5">
-              <div class="flex gap-1"><span class="w-2 h-2 rounded-full bg-red-500/60"></span><span class="w-2 h-2 rounded-full bg-yellow-500/60"></span><span class="w-2 h-2 rounded-full bg-green-500/60"></span></div>
-              <span class="text-xs text-slate-600 font-mono ml-2">localhost:8080/settings</span>
-            </div>
-            <img src="https://raw.githubusercontent.com/selvarajmurugesan90/klarity/main/docs/assets/screenshots/Klarity-Settings-Page.jpg"
-                 alt="Settings page"
-                 class="w-full block">
-          </div>
-          <p class="text-center text-xs text-slate-600 mt-2">Settings — namespace, refresh, display preferences</p>
-        </div>
-
-        <div class="group">
-          <div class="screenshot-frame rounded-xl overflow-hidden">
-            <div class="flex items-center gap-2 px-3 py-2 bg-slate-900/80 border-b border-white/5">
-              <div class="flex gap-1"><span class="w-2 h-2 rounded-full bg-red-500/60"></span><span class="w-2 h-2 rounded-full bg-yellow-500/60"></span><span class="w-2 h-2 rounded-full bg-green-500/60"></span></div>
-              <span class="text-xs text-slate-600 font-mono ml-2">localhost:8080/login</span>
-            </div>
-            <img src="https://raw.githubusercontent.com/selvarajmurugesan90/klarity/main/docs/assets/screenshots/Klarity-Login-Page.jpg"
-                 alt="Login page"
-                 class="w-full block">
-          </div>
-          <p class="text-center text-xs text-slate-600 mt-2">Login — internal auth, token, or OIDC/SSO</p>
-        </div>
-
+      <div class="stat-item">
+        <div class="stat-num gradient-text" data-count="150">0</div>
+        <div class="stat-label">API Endpoints</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num gradient-text">8</div>
+        <div class="stat-label">Auth Providers</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num gradient-text">100%</div>
+        <div class="stat-label">Read-Only Safe</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num gradient-text">0</div>
+        <div class="stat-label">Config Required</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num gradient-text">$0</div>
+        <div class="stat-label">License Cost</div>
       </div>
     </div>
-  </section>
+  </div>
+</div>
 
-  <!-- ── Why Klarity ───────────────────────────────────────── -->
-  <section class="py-16 px-4 sm:px-6 lg:px-8 border-t border-white/5">
-    <div class="max-w-4xl mx-auto">
-      <div class="relative bg-gradient-to-br from-blue-950/40 via-slate-900/60 to-slate-900/40 border border-blue-900/30 rounded-3xl p-8 sm:p-12 overflow-hidden">
-        <div class="absolute top-0 right-0 w-64 h-64 bg-blue-600/5 rounded-full blur-3xl pointer-events-none"></div>
-        <div class="relative">
-          <div class="inline-flex items-center gap-2 bg-blue-950/60 border border-blue-900/40 rounded-full px-3.5 py-1 text-xs text-blue-400 mb-5 font-semibold uppercase tracking-wider">
-            Philosophy
-          </div>
-          <h2 class="text-3xl sm:text-4xl font-extrabold text-white mb-5 leading-tight">Built for GitOps teams</h2>
-          <p class="text-slate-300 text-lg leading-relaxed mb-5">
-            Most dashboards let you edit resources directly. Klarity deliberately
-            <strong class="text-white">does not</strong> — because in a proper GitOps workflow your
-            cluster's source of truth lives in Git, not a web form.
-          </p>
-          <p class="text-slate-400 leading-relaxed">
-            Klarity fills the gap that GitOps creates: you need <strong class="text-slate-200">complete visibility</strong> into
-            what's running, real-time diagnostics when something goes wrong, and a way to share cluster
-            state with your team — all without the risk of accidental mutations bypassing your review
-            and pipeline process.
-          </p>
-          <div class="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-4">
-            <div class="bg-slate-950/60 rounded-xl p-4 text-center border border-white/5">
-              <div class="text-2xl mb-2">🔍</div>
-              <div class="text-xs text-slate-400 font-medium">Observe</div>
-            </div>
-            <div class="bg-slate-950/60 rounded-xl p-4 text-center border border-white/5">
-              <div class="text-2xl mb-2">🩺</div>
-              <div class="text-xs text-slate-400 font-medium">Diagnose</div>
-            </div>
-            <div class="bg-slate-950/60 rounded-xl p-4 text-center border border-white/5">
-              <div class="text-2xl mb-2">🤝</div>
-              <div class="text-xs text-slate-400 font-medium">Collaborate</div>
-            </div>
-            <div class="bg-slate-950/60 rounded-xl p-4 text-center border border-white/5">
-              <div class="text-2xl mb-2">🔄</div>
-              <div class="text-xs text-slate-400 font-medium">Integrate</div>
-            </div>
-          </div>
-        </div>
+<div class="divider"></div>
+
+<!-- ── Features ─────────────────────────────────────────────────── -->
+<section class="section" id="features">
+  <div class="container">
+    <div class="section-header fade-up">
+      <div class="label">Everything You Need</div>
+      <h2 class="h1" style="margin-top:12px">Built for Engineering Teams</h2>
+      <p>Every feature a platform engineer, SRE, or developer needs to operate Kubernetes clusters confidently &mdash; with zero risk of accidental mutations.</p>
+    </div>
+
+    <div class="features-grid">
+      <div class="feature-card fade-up">
+        <div class="feature-icon">&#x1F50D;</div>
+        <h3>Auto-Discovery &mdash; 60+ Resources</h3>
+        <p>Klarity calls <code style="font-family:var(--mono);font-size:0.8rem;color:var(--cyan)">GET /apis</code> on startup and maps every resource type including all installed CRDs. Istio, Cert-Manager, Prometheus Operator &mdash; everything appears automatically.</p>
+        <span class="tag tag-blue">Zero Config</span>
+      </div>
+      <div class="feature-card fade-up fade-up-delay-1">
+        <div class="feature-icon">&#x1F512;</div>
+        <h3>Read-Only by Design</h3>
+        <p>No create, edit, or delete for cluster resources. In a GitOps workflow your cluster's source of truth lives in Git &mdash; not a web form. Klarity never bypasses your review pipeline.</p>
+        <span class="tag tag-purple">GitOps-First</span>
+      </div>
+      <div class="feature-card fade-up fade-up-delay-2">
+        <div class="feature-icon">&#x1F504;</div>
+        <h3>GitOps Integration</h3>
+        <p>Auto-detects ArgoCD and Flux CD by scanning installed CRDs. Apps, sync status, health, source, revision, Kustomizations, HelmReleases &mdash; all appear automatically with zero configuration.</p>
+        <span class="tag tag-green">ArgoCD + Flux</span>
+      </div>
+      <div class="feature-card fade-up">
+        <div class="feature-icon">&#x1F4CA;</div>
+        <h3>Real-time Metrics</h3>
+        <p>Live CPU and Memory for every node and pod via metrics-server. Top Consumers view, container-level breakdowns, circular capacity gauges, and namespace summaries.</p>
+        <span class="tag tag-cyan">metrics-server</span>
+      </div>
+      <div class="feature-card fade-up fade-up-delay-1">
+        <div class="feature-icon">&#x1F5A5;</div>
+        <h3>Web Terminal</h3>
+        <p>Full kubectl exec in your browser via xterm.js. Connecting, connected, reconnecting, and error states handled gracefully. No local kubectl required.</p>
+        <span class="tag tag-purple">xterm.js</span>
+      </div>
+      <div class="feature-card fade-up fade-up-delay-2">
+        <div class="feature-icon">&#x1F4CB;</div>
+        <h3>Live Log Streaming</h3>
+        <p>Real-time WebSocket log streams with severity filtering (ERROR / WARN / INFO / DEBUG), keyword search, auto-scroll toggle, and one-click download.</p>
+        <span class="tag tag-blue">WebSocket</span>
+      </div>
+      <div class="feature-card fade-up">
+        <div class="feature-icon">&#x1F50C;</div>
+        <h3>Port Forwarding</h3>
+        <p>SPDY tunnel through the Kubernetes API exposed as a local HTTP proxy. Access any pod's service port directly in your browser &mdash; no kubectl, no local tools.</p>
+        <span class="tag tag-cyan">SPDY Proxy</span>
+      </div>
+      <div class="feature-card fade-up fade-up-delay-1">
+        <div class="feature-icon">&#x1F4CC;</div>
+        <h3>Activities Panel</h3>
+        <p>Persistent right-side drawer. Pin log streams and terminals so they keep running while you navigate. Multiple sessions in a tab bar &mdash; all stay alive.</p>
+        <span class="tag tag-green">Persistent Sessions</span>
+      </div>
+      <div class="feature-card fade-up fade-up-delay-2">
+        <div class="feature-icon">&#x1F510;</div>
+        <h3>Enterprise Auth</h3>
+        <p>Built-in user management with bcrypt passwords, roles, account lockout, and JWT tokens. OIDC/SSO for Google, GitHub, Okta, Azure AD, Dex, Keycloak, Auth0.</p>
+        <span class="tag tag-purple">OIDC + Internal</span>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- ── Features ──────────────────────────────────────────── -->
-  <section id="features" class="py-24 px-4 sm:px-6 lg:px-8 border-t border-white/5">
-    <div class="max-w-7xl mx-auto">
-      <div class="text-center max-w-2xl mx-auto mb-16">
-        <div class="inline-flex items-center gap-2 bg-slate-800/60 border border-slate-700/40 rounded-full px-3.5 py-1 text-xs text-slate-400 mb-4 font-semibold uppercase tracking-wider">Features</div>
-        <h2 class="text-3xl sm:text-4xl font-extrabold text-white mb-4">Everything you need to observe your cluster</h2>
-        <p class="text-slate-400 text-lg">Complete visibility without the risk of accidental mutations.</p>
+<div class="divider"></div>
+
+<!-- ── Screenshots ───────────────────────────────────────────────── -->
+<section class="section screenshots-section" id="screenshots">
+  <div class="container">
+    <div class="section-header fade-up">
+      <div class="label">In Action</div>
+      <h2 class="h1" style="margin-top:12px">See Klarity in Action</h2>
+      <p>Real screenshots from a live Kubernetes cluster. Click any image to enlarge.</p>
+    </div>
+
+    <!-- Pods list - full width -->
+    <div class="screenshots-main fade-up">
+      <div class="screenshot-browser">
+        <div class="browser-bar">
+          <div class="browser-dots"><span></span><span></span><span></span></div>
+          <div class="browser-addr">Pods &mdash; Workloads &mdash; Klarity</div>
+        </div>
+        <div class="browser-body">
+          <img
+            src="https://raw.githubusercontent.com/selvarajmurugesan90/klarity/main/docs/assets/screenshots/Klarity-Resources-Pod.jpg"
+            alt="Pods list with CPU and Memory"
+            onclick="openLightbox(this.src)"
+          />
+        </div>
       </div>
-
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-
-        <div class="card group bg-slate-900/60 border border-white/5 hover:border-blue-900/40 rounded-2xl p-7">
-          <div class="w-11 h-11 bg-blue-950/80 border border-blue-900/40 rounded-xl flex items-center justify-center mb-5 group-hover:border-blue-700/60 transition-colors">
-            <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-          </div>
-          <h3 class="text-white font-bold text-lg mb-2.5">Auto-Discovery</h3>
-          <p class="text-slate-400 text-sm leading-relaxed">Calls <code class="text-blue-400 bg-blue-950/40 px-1.5 py-0.5 rounded font-mono text-xs">GET /apis</code> on startup and maps every resource type — including all installed CRDs. Istio, Cert-Manager, ArgoCD appear automatically.</p>
-        </div>
-
-        <div class="card group bg-slate-900/60 border border-white/5 hover:border-blue-900/40 rounded-2xl p-7">
-          <div class="w-11 h-11 bg-blue-950/80 border border-blue-900/40 rounded-xl flex items-center justify-center mb-5 group-hover:border-blue-700/60 transition-colors">
-            <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-          </div>
-          <h3 class="text-white font-bold text-lg mb-2.5">Live Log Streaming</h3>
-          <p class="text-slate-400 text-sm leading-relaxed">Real-time WebSocket logs with severity filter (ERROR/WARN/INFO/DEBUG), keyword search, auto-scroll, and download. Pinned sessions survive navigation.</p>
-        </div>
-
-        <div class="card group bg-slate-900/60 border border-white/5 hover:border-blue-900/40 rounded-2xl p-7">
-          <div class="w-11 h-11 bg-blue-950/80 border border-blue-900/40 rounded-xl flex items-center justify-center mb-5 group-hover:border-blue-700/60 transition-colors">
-            <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-          </div>
-          <h3 class="text-white font-bold text-lg mb-2.5">Web Terminal</h3>
-          <p class="text-slate-400 text-sm leading-relaxed">Full <code class="text-blue-400 bg-blue-950/40 px-1.5 py-0.5 rounded font-mono text-xs">kubectl exec</code> experience via xterm.js with auto-reconnect. No local kubectl required — works from any browser.</p>
-        </div>
-
-        <div class="card group bg-slate-900/60 border border-white/5 hover:border-green-900/40 rounded-2xl p-7">
-          <div class="w-11 h-11 bg-green-950/80 border border-green-900/40 rounded-xl flex items-center justify-center mb-5 group-hover:border-green-700/60 transition-colors">
-            <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-          </div>
-          <h3 class="text-white font-bold text-lg mb-2.5">GitOps Integration</h3>
-          <p class="text-slate-400 text-sm leading-relaxed">Auto-detects ArgoCD and Flux CD by scanning cluster CRDs. Sync status, health, reconciliation, AppSets, HelmReleases — all visible, zero configuration.</p>
-        </div>
-
-        <div class="card group bg-slate-900/60 border border-white/5 hover:border-purple-900/40 rounded-2xl p-7">
-          <div class="w-11 h-11 bg-purple-950/80 border border-purple-900/40 rounded-xl flex items-center justify-center mb-5 group-hover:border-purple-700/60 transition-colors">
-            <svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
-          </div>
-          <h3 class="text-white font-bold text-lg mb-2.5">User Management</h3>
-          <p class="text-slate-400 text-sm leading-relaxed">Built-in auth with bcrypt passwords, three roles (admin/editor/viewer), 5-attempt lockout, 8h JWT tokens, and full OIDC/SSO support.</p>
-        </div>
-
-        <div class="card group bg-slate-900/60 border border-white/5 hover:border-orange-900/40 rounded-2xl p-7">
-          <div class="w-11 h-11 bg-orange-950/80 border border-orange-900/40 rounded-xl flex items-center justify-center mb-5 group-hover:border-orange-700/60 transition-colors">
-            <svg class="w-5 h-5 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
-          </div>
-          <h3 class="text-white font-bold text-lg mb-2.5">Real-time Metrics</h3>
-          <p class="text-slate-400 text-sm leading-relaxed">CPU and Memory via metrics-server. Node circular gauges, container-level breakdown, top consumers, namespace summaries, and visual progress bars.</p>
-        </div>
-
-        <div class="card group bg-slate-900/60 border border-white/5 hover:border-cyan-900/40 rounded-2xl p-7">
-          <div class="w-11 h-11 bg-cyan-950/80 border border-cyan-900/40 rounded-xl flex items-center justify-center mb-5 group-hover:border-cyan-700/60 transition-colors">
-            <svg class="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"/></svg>
-          </div>
-          <h3 class="text-white font-bold text-lg mb-2.5">Port Forwarding</h3>
-          <p class="text-slate-400 text-sm leading-relaxed">HTTP proxy tunnel via SPDY — access any pod's service port directly in your browser without running kubectl locally.</p>
-        </div>
-
-        <div class="card group bg-slate-900/60 border border-white/5 hover:border-slate-700/60 rounded-2xl p-7">
-          <div class="w-11 h-11 bg-slate-800/80 border border-slate-700/40 rounded-xl flex items-center justify-center mb-5 group-hover:border-slate-600 transition-colors">
-            <svg class="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
-          </div>
-          <h3 class="text-white font-bold text-lg mb-2.5">Audit Log</h3>
-          <p class="text-slate-400 text-sm leading-relaxed">Every operation recorded in a 2000-event ring buffer — user, action, resource, namespace, HTTP status. Downloadable cluster health HTML reports.</p>
-        </div>
-
-        <div class="card group bg-slate-900/60 border border-white/5 hover:border-slate-700/60 rounded-2xl p-7">
-          <div class="w-11 h-11 bg-slate-800/80 border border-slate-700/40 rounded-xl flex items-center justify-center mb-5 group-hover:border-slate-600 transition-colors">
-            <svg class="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
-          </div>
-          <h3 class="text-white font-bold text-lg mb-2.5">Read-Only by Design</h3>
-          <p class="text-slate-400 text-sm leading-relaxed">No create/edit/delete for cluster resources. Your cluster's source of truth is Git, not a UI form. Safe to grant broad team access.</p>
-        </div>
+      <div class="screenshots-caption">
+        <strong>Pods &mdash; Real-time Resource Monitoring</strong> &nbsp;&middot;&nbsp; CPU &amp; Memory per pod with progress bars &middot; Namespace filter &middot; Status badges
       </div>
     </div>
-  </section>
 
-  <!-- ── OIDC Providers ────────────────────────────────────── -->
-  <section class="py-16 px-4 sm:px-6 lg:px-8 border-t border-white/5">
-    <div class="max-w-4xl mx-auto text-center">
-      <p class="text-slate-500 text-sm font-semibold uppercase tracking-widest mb-8">SSO / OIDC — Works with any OpenID Connect provider</p>
-      <div class="flex flex-wrap justify-center gap-3">
-        <span class="flex items-center gap-2 bg-slate-900 border border-white/5 rounded-xl px-4 py-2.5 text-sm text-slate-300 font-medium">Google</span>
-        <span class="flex items-center gap-2 bg-slate-900 border border-white/5 rounded-xl px-4 py-2.5 text-sm text-slate-300 font-medium">GitHub</span>
-        <span class="flex items-center gap-2 bg-slate-900 border border-white/5 rounded-xl px-4 py-2.5 text-sm text-slate-300 font-medium">GitLab</span>
-        <span class="flex items-center gap-2 bg-slate-900 border border-white/5 rounded-xl px-4 py-2.5 text-sm text-slate-300 font-medium">Okta</span>
-        <span class="flex items-center gap-2 bg-slate-900 border border-white/5 rounded-xl px-4 py-2.5 text-sm text-slate-300 font-medium">Keycloak</span>
-        <span class="flex items-center gap-2 bg-slate-900 border border-white/5 rounded-xl px-4 py-2.5 text-sm text-slate-300 font-medium">Azure AD</span>
-        <span class="flex items-center gap-2 bg-slate-900 border border-white/5 rounded-xl px-4 py-2.5 text-sm text-slate-300 font-medium">Dex</span>
-        <span class="flex items-center gap-2 bg-slate-900 border border-white/5 rounded-xl px-4 py-2.5 text-sm text-slate-300 font-medium">Auth0</span>
+    <!-- Top Consumers - full width -->
+    <div class="screenshots-main fade-up" style="margin-top:40px">
+      <div class="screenshot-browser">
+        <div class="browser-bar">
+          <div class="browser-dots"><span></span><span></span><span></span></div>
+          <div class="browser-addr">Top Consumers &mdash; Operations &mdash; Klarity</div>
+        </div>
+        <div class="browser-body">
+          <img
+            src="https://raw.githubusercontent.com/selvarajmurugesan90/klarity/main/docs/assets/screenshots/Klarity-Top-Consumers.jpg"
+            alt="Top Resource Consumers"
+            onclick="openLightbox(this.src)"
+          />
+        </div>
+      </div>
+      <div class="screenshots-caption">
+        <strong>Top Resource Consumers</strong> &nbsp;&middot;&nbsp; Live CPU &amp; Memory ranked across all pods &middot; Sort by CPU or Memory &middot; Namespace view
       </div>
     </div>
-  </section>
 
-  <!-- ── Comparison ────────────────────────────────────────── -->
-  <section class="py-20 px-4 sm:px-6 lg:px-8 border-t border-white/5">
-    <div class="max-w-4xl mx-auto">
-      <div class="text-center max-w-xl mx-auto mb-12">
-        <h2 class="text-3xl sm:text-4xl font-extrabold text-white mb-4">How Klarity compares</h2>
-        <p class="text-slate-400">Klarity is the only Kubernetes dashboard built from the ground up for GitOps teams.</p>
+    <!-- Grid: Settings + Login -->
+    <div class="screenshots-grid fade-up" style="margin-top:40px">
+      <div class="screenshot-thumb" onclick="openLightbox(this.querySelector('img').src)">
+        <img
+          src="https://raw.githubusercontent.com/selvarajmurugesan90/klarity/main/docs/assets/screenshots/Klarity-Settings-Page.jpg"
+          alt="Settings page"
+        />
+        <div class="screenshot-label">&#x2699;&#xFE0F; Settings &mdash; Auto-refresh &middot; Page size &middot; Timezone</div>
       </div>
-      <div class="overflow-hidden rounded-2xl border border-white/5">
-        <table class="w-full text-sm">
-          <thead>
-            <tr class="bg-slate-900/80 border-b border-white/5">
-              <th class="text-left px-6 py-4 text-slate-300 font-semibold w-1/2">Feature</th>
-              <th class="text-center px-5 py-4 font-semibold">
-                <span class="gradient-text text-base">Klarity</span>
-              </th>
-              <th class="text-center px-5 py-4 text-slate-500 font-semibold">Headlamp</th>
-              <th class="text-center px-5 py-4 text-slate-500 font-semibold">k9s</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-white/4">
-            <tr class="bg-slate-950/60 hover:bg-slate-900/40 transition-colors">
-              <td class="px-6 py-3.5 text-slate-300">GitOps-First Philosophy</td>
-              <td class="px-5 py-3.5 text-center text-green-400 text-lg font-bold">✓</td>
-              <td class="px-5 py-3.5 text-center text-slate-700 text-lg">✗</td>
-              <td class="px-5 py-3.5 text-center text-slate-700 text-lg">✗</td>
-            </tr>
-            <tr class="bg-slate-950/60 hover:bg-slate-900/40 transition-colors">
-              <td class="px-6 py-3.5 text-slate-300">Internal User Management</td>
-              <td class="px-5 py-3.5 text-center text-green-400 text-lg font-bold">✓</td>
-              <td class="px-5 py-3.5 text-center text-slate-700 text-lg">✗</td>
-              <td class="px-5 py-3.5 text-center text-slate-700 text-lg">✗</td>
-            </tr>
-            <tr class="bg-slate-950/60 hover:bg-slate-900/40 transition-colors">
-              <td class="px-6 py-3.5 text-slate-300">Auto-Detect ArgoCD + Flux</td>
-              <td class="px-5 py-3.5 text-center text-green-400 font-bold text-xs">✓ Zero config</td>
-              <td class="px-5 py-3.5 text-center text-slate-700 text-lg">✗</td>
-              <td class="px-5 py-3.5 text-center text-slate-700 text-lg">✗</td>
-            </tr>
-            <tr class="bg-slate-950/60 hover:bg-slate-900/40 transition-colors">
-              <td class="px-6 py-3.5 text-slate-300">Activities Panel (pinned logs)</td>
-              <td class="px-5 py-3.5 text-center text-green-400 text-lg font-bold">✓</td>
-              <td class="px-5 py-3.5 text-center text-green-400 text-lg">✓</td>
-              <td class="px-5 py-3.5 text-center text-slate-700 text-lg">✗</td>
-            </tr>
-            <tr class="bg-slate-950/60 hover:bg-slate-900/40 transition-colors">
-              <td class="px-6 py-3.5 text-slate-300">Web-Based (no install)</td>
-              <td class="px-5 py-3.5 text-center text-green-400 text-lg font-bold">✓</td>
-              <td class="px-5 py-3.5 text-center text-green-400 text-lg">✓</td>
-              <td class="px-5 py-3.5 text-center text-slate-600 text-xs font-medium">CLI only</td>
-            </tr>
-            <tr class="bg-slate-950/60 hover:bg-slate-900/40 transition-colors">
-              <td class="px-6 py-3.5 text-slate-300">Audit Log</td>
-              <td class="px-5 py-3.5 text-center text-green-400 text-lg font-bold">✓</td>
-              <td class="px-5 py-3.5 text-center text-slate-700 text-lg">✗</td>
-              <td class="px-5 py-3.5 text-center text-slate-700 text-lg">✗</td>
-            </tr>
-            <tr class="bg-slate-950/60 hover:bg-slate-900/40 transition-colors">
-              <td class="px-6 py-3.5 text-slate-300">Single Binary Deployment</td>
-              <td class="px-5 py-3.5 text-center text-green-400 text-lg font-bold">✓</td>
-              <td class="px-5 py-3.5 text-center text-slate-700 text-lg">✗</td>
-              <td class="px-5 py-3.5 text-center text-green-400 text-lg">✓</td>
-            </tr>
-          </tbody>
-        </table>
+      <div class="screenshot-thumb" onclick="openLightbox(this.querySelector('img').src)">
+        <img
+          src="https://raw.githubusercontent.com/selvarajmurugesan90/klarity/main/docs/assets/screenshots/Klarity-Login-Page.jpg"
+          alt="Login page"
+        />
+        <div class="screenshot-label">&#x1F510; Login &mdash; Internal auth &middot; K8s Token &middot; OIDC/SSO</div>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- ── Install ───────────────────────────────────────────── -->
-  <section id="install" class="py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-transparent via-blue-950/5 to-transparent border-t border-b border-white/5">
-    <div class="max-w-3xl mx-auto">
-      <div class="text-center mb-12">
-        <div class="inline-flex items-center gap-2 bg-slate-800/60 border border-slate-700/40 rounded-full px-3.5 py-1 text-xs text-slate-400 mb-5 font-semibold uppercase tracking-wider">Installation</div>
-        <h2 class="text-3xl sm:text-4xl font-extrabold text-white mb-4">Deploy in 30 seconds</h2>
-        <p class="text-slate-400 text-lg">Works with any Kubernetes 1.26+ cluster — kind, minikube, EKS, GKE, AKS, k3s.</p>
+<div class="divider"></div>
+
+<!-- ── Install ───────────────────────────────────────────────────── -->
+<section class="section-sm install-section" id="install">
+  <div class="container">
+    <div class="section-header fade-up">
+      <div class="label">Get Started</div>
+      <h2 class="h1" style="margin-top:12px">Up and Running in Minutes</h2>
+      <p>Three installation paths. All free. All self-hosted. Zero vendor lock-in.</p>
+    </div>
+
+    <div class="fade-up">
+      <div class="install-tabs">
+        <button class="install-tab active" onclick="switchTab(this,'tab-helm')">Helm (Recommended)</button>
+        <button class="install-tab" onclick="switchTab(this,'tab-kubectl')">kubectl</button>
+        <button class="install-tab" onclick="switchTab(this,'tab-docker')">Docker Compose</button>
       </div>
 
-      <div class="flex gap-2 mb-5 p-1 bg-slate-900/60 border border-white/5 rounded-xl w-fit" role="tablist">
-        <button onclick="showTab('helm')" id="tab-helm" role="tab"
-                class="tab-btn tab-active px-5 py-2.5 rounded-lg text-sm font-bold transition-all">Helm</button>
-        <button onclick="showTab('kubectl')" id="tab-kubectl" role="tab"
-                class="tab-btn tab-inactive px-5 py-2.5 rounded-lg text-sm font-bold transition-all">kubectl</button>
-        <button onclick="showTab('docker')" id="tab-docker" role="tab"
-                class="tab-btn tab-inactive px-5 py-2.5 rounded-lg text-sm font-bold transition-all">Docker</button>
-      </div>
-
-      <!-- Helm -->
-      <div id="content-helm" class="tab-content">
-        <div class="bg-slate-950 border border-white/5 rounded-2xl overflow-hidden shadow-2xl">
-          <div class="flex items-center justify-between px-5 py-3 border-b border-white/5 bg-slate-900/60">
-            <div class="flex items-center gap-2">
-              <div class="flex gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-slate-700"></span><span class="w-2.5 h-2.5 rounded-full bg-slate-700"></span><span class="w-2.5 h-2.5 rounded-full bg-slate-700"></span></div>
-              <span class="text-xs text-slate-500 font-medium ml-2">Recommended for production</span>
-            </div>
-            <button onclick="copyCode('helm-code')"
-                    class="text-xs text-slate-500 hover:text-slate-200 flex items-center gap-1.5 transition-colors px-2 py-1 rounded hover:bg-white/5">
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-              Copy
-            </button>
+      <div id="tab-helm" class="install-panel active">
+        <div class="code-block">
+          <div class="code-header">
+            <span>bash</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
           </div>
-          <pre id="helm-code" class="p-6 text-sm font-mono leading-relaxed overflow-x-auto"><span class="text-slate-600"># Add the Helm repository</span>
-<span class="text-green-400">helm</span> repo add klarity https://selvarajmurugesan90.github.io/klarity
-<span class="text-green-400">helm</span> repo update
+          <pre><span class="tok-comment"># Add the Helm repository</span>
+helm repo add klarity https://selvarajmurugesan90.github.io/klarity
+helm repo update
 
-<span class="text-slate-600"># Install Klarity</span>
-<span class="text-green-400">helm</span> upgrade --install klarity klarity/klarity \
+<span class="tok-comment"># Install into the klarity namespace</span>
+helm upgrade --install klarity klarity/klarity \
   --namespace klarity \
   --create-namespace \
   --set config.authMode=internal
 
-<span class="text-slate-600"># Access the dashboard</span>
-<span class="text-green-400">kubectl</span> port-forward svc/klarity 8080:8080 -n klarity</pre>
+<span class="tok-comment"># Open the dashboard</span>
+kubectl port-forward svc/klarity 8080:8080 -n klarity</pre>
         </div>
-        <p class="mt-3 text-sm text-slate-500">Open <a href="http://localhost:8080" class="text-blue-400 hover:text-blue-300 transition-colors">http://localhost:8080</a> — Default: <code class="text-slate-300 bg-slate-800/60 px-1.5 py-0.5 rounded font-mono text-xs">admin</code> / <code class="text-slate-300 bg-slate-800/60 px-1.5 py-0.5 rounded font-mono text-xs">admin@123</code> <span class="text-slate-600">(change required on first login)</span></p>
+        <p style="margin-top:16px;font-size:0.85rem;color:var(--text-muted)">
+          Default credentials: <code style="font-family:var(--mono);color:var(--cyan)">admin / admin@123</code> and <code style="font-family:var(--mono);color:var(--cyan)">viewer / viewer@123</code> &mdash; password change required on first login.
+        </p>
       </div>
 
-      <!-- kubectl -->
-      <div id="content-kubectl" class="tab-content hidden">
-        <div class="bg-slate-950 border border-white/5 rounded-2xl overflow-hidden shadow-2xl">
-          <div class="flex items-center justify-between px-5 py-3 border-b border-white/5 bg-slate-900/60">
-            <div class="flex items-center gap-2">
-              <div class="flex gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-slate-700"></span><span class="w-2.5 h-2.5 rounded-full bg-slate-700"></span><span class="w-2.5 h-2.5 rounded-full bg-slate-700"></span></div>
-              <span class="text-xs text-slate-500 font-medium ml-2">Quick install via Kustomize</span>
-            </div>
-            <button onclick="copyCode('kubectl-code')"
-                    class="text-xs text-slate-500 hover:text-slate-200 flex items-center gap-1.5 transition-colors px-2 py-1 rounded hover:bg-white/5">
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-              Copy
-            </button>
+      <div id="tab-kubectl" class="install-panel">
+        <div class="code-block">
+          <div class="code-header">
+            <span>bash</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
           </div>
-          <pre id="kubectl-code" class="p-6 text-sm font-mono leading-relaxed overflow-x-auto"><span class="text-slate-600"># Deploy with kubectl</span>
-<span class="text-green-400">kubectl</span> apply -k https://github.com/selvarajmurugesan90/klarity/deploy/manifests
+          <pre><span class="tok-comment"># Apply manifests</span>
+kubectl apply -k https://github.com/selvarajmurugesan90/klarity/deploy/manifests
 
-<span class="text-slate-600"># Access the dashboard</span>
-<span class="text-green-400">kubectl</span> port-forward svc/klarity 8080:8080 -n klarity</pre>
+<span class="tok-comment"># Check status</span>
+kubectl get all -n klarity
+
+<span class="tok-comment"># Open the dashboard</span>
+kubectl port-forward svc/klarity 8080:8080 -n klarity</pre>
         </div>
-        <p class="mt-3 text-sm text-slate-500">Open <a href="http://localhost:8080" class="text-blue-400 hover:text-blue-300 transition-colors">http://localhost:8080</a> — Default: <code class="text-slate-300 bg-slate-800/60 px-1.5 py-0.5 rounded font-mono text-xs">admin</code> / <code class="text-slate-300 bg-slate-800/60 px-1.5 py-0.5 rounded font-mono text-xs">admin@123</code></p>
       </div>
 
-      <!-- Docker -->
-      <div id="content-docker" class="tab-content hidden">
-        <div class="bg-slate-950 border border-white/5 rounded-2xl overflow-hidden shadow-2xl">
-          <div class="flex items-center justify-between px-5 py-3 border-b border-white/5 bg-slate-900/60">
-            <div class="flex items-center gap-2">
-              <div class="flex gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-slate-700"></span><span class="w-2.5 h-2.5 rounded-full bg-slate-700"></span><span class="w-2.5 h-2.5 rounded-full bg-slate-700"></span></div>
-              <span class="text-xs text-slate-500 font-medium ml-2">GHCR image or Docker Compose</span>
-            </div>
-            <button onclick="copyCode('docker-code')"
-                    class="text-xs text-slate-500 hover:text-slate-200 flex items-center gap-1.5 transition-colors px-2 py-1 rounded hover:bg-white/5">
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-              Copy
-            </button>
+      <div id="tab-docker" class="install-panel">
+        <div class="code-block">
+          <div class="code-header">
+            <span>bash</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
           </div>
-          <pre id="docker-code" class="p-6 text-sm font-mono leading-relaxed overflow-x-auto"><span class="text-slate-600"># Pull the image</span>
-<span class="text-green-400">docker</span> pull ghcr.io/selvarajmurugesan90/klarity:latest
+          <pre><span class="tok-comment"># Uses ~/.kube/config · Auth mode: none · No account required</span>
+git clone https://github.com/selvarajmurugesan90/klarity
+cd klarity
+docker compose up
 
-<span class="text-slate-600"># Or run with Docker Compose (local dev)</span>
-<span class="text-green-400">git</span> clone https://github.com/selvarajmurugesan90/klarity
-<span class="text-green-400">cd</span> klarity && docker compose up</pre>
-        </div>
-        <p class="mt-3 text-sm text-slate-500">Mounts <code class="text-slate-300 bg-slate-800/60 px-1.5 py-0.5 rounded font-mono text-xs">~/.kube/config</code> read-only. Open <a href="http://localhost:8080" class="text-blue-400 hover:text-blue-300 transition-colors">http://localhost:8080</a></p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ── Tech stack ────────────────────────────────────────── -->
-  <section class="py-16 px-4 sm:px-6 lg:px-8 border-t border-white/5">
-    <div class="max-w-3xl mx-auto text-center">
-      <h2 class="text-2xl sm:text-3xl font-extrabold text-white mb-3">Built on modern, proven technology</h2>
-      <p class="text-slate-400 mb-10">Single binary — Go backend with embedded React frontend. Alpine base, non-root container, read-only filesystem.</p>
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div class="card bg-slate-900/60 border border-white/5 rounded-2xl p-6 text-center">
-          <div class="text-4xl mb-3">🐹</div>
-          <div class="text-sm font-bold text-white">Go 1.22+</div>
-          <div class="text-xs text-slate-500 mt-1.5">Gin &bull; client-go</div>
-        </div>
-        <div class="card bg-slate-900/60 border border-white/5 rounded-2xl p-6 text-center">
-          <div class="text-4xl mb-3">⚛️</div>
-          <div class="text-sm font-bold text-white">React 18</div>
-          <div class="text-xs text-slate-500 mt-1.5">TypeScript &bull; Vite</div>
-        </div>
-        <div class="card bg-slate-900/60 border border-white/5 rounded-2xl p-6 text-center">
-          <div class="text-4xl mb-3">☸️</div>
-          <div class="text-sm font-bold text-white">Kubernetes</div>
-          <div class="text-xs text-slate-500 mt-1.5">1.26+ &bull; Helm 3</div>
-        </div>
-        <div class="card bg-slate-900/60 border border-white/5 rounded-2xl p-6 text-center">
-          <div class="text-4xl mb-3">🔒</div>
-          <div class="text-sm font-bold text-white">Secure</div>
-          <div class="text-xs text-slate-500 mt-1.5">bcrypt &bull; JWT &bull; OIDC</div>
+<span class="tok-comment"># Open http://localhost:8080</span></pre>
         </div>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- ── CTA ───────────────────────────────────────────────── -->
-  <section class="py-24 px-4 sm:px-6 lg:px-8 border-t border-white/5">
-    <div class="max-w-3xl mx-auto text-center">
-      <div class="relative bg-gradient-to-br from-blue-950/50 via-slate-900/60 to-indigo-950/30 border border-blue-900/30 rounded-3xl p-10 sm:p-16 overflow-hidden">
-        <div class="absolute inset-0 bg-grid-pattern opacity-5"></div>
-        <div class="absolute -top-10 -right-10 w-48 h-48 bg-blue-600/10 rounded-full blur-3xl"></div>
-        <div class="relative">
-          <h2 class="text-3xl sm:text-4xl font-extrabold text-white mb-4">Ready to observe your cluster?</h2>
-          <p class="text-slate-400 text-lg mb-8">Free and open source. No account required. Deploy in under a minute.</p>
-          <div class="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="#install"
-               class="inline-flex items-center justify-center gap-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold px-8 py-4 rounded-xl transition-all shadow-xl shadow-blue-900/40 text-base">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-              Get Started
-            </a>
-            <a href="https://github.com/selvarajmurugesan90/klarity"
-               class="inline-flex items-center justify-center gap-2.5 bg-white/5 hover:bg-white/10 text-white font-bold px-8 py-4 rounded-xl transition-all border border-white/10 text-base">
-              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
-              Star on GitHub
-            </a>
-          </div>
+<div class="divider"></div>
+
+<!-- ── Auth providers ─────────────────────────────────────────────── -->
+<section class="section-sm" id="auth">
+  <div class="container">
+    <div class="section-header fade-up">
+      <div class="label">Authentication</div>
+      <h2 class="h2" style="margin-top:12px">Works with Your Identity Provider</h2>
+      <p>Built-in user management or plug in any OIDC-compatible SSO provider.</p>
+    </div>
+    <div class="providers-row fade-up">
+      <span class="provider-badge">&#x1F511; Internal Auth</span>
+      <span class="provider-badge">&#x1F310; Google</span>
+      <span class="provider-badge">&#x1F419; GitHub</span>
+      <span class="provider-badge">&#x1F98A; GitLab</span>
+      <span class="provider-badge">&#x1F535; Azure AD</span>
+      <span class="provider-badge">&#x1F7E0; Okta</span>
+      <span class="provider-badge">&#x26AB; Auth0</span>
+      <span class="provider-badge">&#x1F534; Keycloak</span>
+      <span class="provider-badge">&#x1F7E4; Dex</span>
+      <span class="provider-badge">&#x2638;&#xFE0F; K8s Token</span>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ── Architecture ──────────────────────────────────────────────── -->
+<section class="section arch-section" id="architecture">
+  <div class="container">
+    <div class="section-header fade-up">
+      <div class="label">Architecture</div>
+      <h2 class="h1" style="margin-top:12px">Simple, Stateless, Secure</h2>
+      <p>A single Go binary embeds the React frontend, connects to Kubernetes in-cluster, and exposes a clean REST + WebSocket API. Nothing to manage.</p>
+    </div>
+
+    <div class="arch-diagram fade-up">
+      <div class="arch-col">
+        <div style="text-align:center;padding:16px 0;font-size:0.7rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted)">Browser</div>
+        <div class="arch-box" style="border-color:rgba(96,165,250,0.25)">
+          <div class="arch-box-title" style="color:var(--blue)">React App</div>
+          <ul>
+            <li>React 18 + TypeScript</li>
+            <li>TanStack Query v5</li>
+            <li>Zustand state</li>
+            <li>xterm.js terminal</li>
+            <li>Monaco YAML viewer</li>
+            <li>Recharts metrics</li>
+          </ul>
+        </div>
+        <div style="text-align:center;font-size:1.5rem;color:var(--text-dim)">&#x2193;</div>
+        <div class="arch-box">
+          <div class="arch-box-title" style="color:var(--text-muted)">Transport</div>
+          <ul>
+            <li>REST JSON /api/v1/*</li>
+            <li>WebSocket /ws/logs</li>
+            <li>WebSocket /ws/exec</li>
+            <li>HTTP proxy /proxy/*</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="arch-col">
+        <div style="text-align:center;padding:16px 0;font-size:0.7rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted)">Klarity Server</div>
+        <div class="arch-box" style="border-color:rgba(167,139,250,0.25)">
+          <div class="arch-box-title" style="color:var(--purple)">Go + Gin</div>
+          <ul>
+            <li>Auth middleware</li>
+            <li>Audit ring buffer (2000)</li>
+            <li>CORS + Gzip</li>
+            <li>~150 route handlers</li>
+            <li>WebSocket managers</li>
+            <li>SPDY port-forward proxy</li>
+          </ul>
+        </div>
+        <div style="text-align:center;font-size:1.5rem;color:var(--text-dim)">&#x2193;</div>
+        <div class="arch-box">
+          <div class="arch-box-title" style="color:var(--text-muted)">Auth Layer</div>
+          <ul>
+            <li>JWT 8h access tokens</li>
+            <li>JWT 7d refresh tokens</li>
+            <li>bcrypt cost-12 passwords</li>
+            <li>OIDC / OAuth2</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="arch-col">
+        <div style="text-align:center;padding:16px 0;font-size:0.7rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted)">Kubernetes</div>
+        <div class="arch-box" style="border-color:rgba(34,211,238,0.25)">
+          <div class="arch-box-title" style="color:var(--cyan)">API Server</div>
+          <ul>
+            <li>In-cluster ServiceAccount</li>
+            <li>GET /apis auto-discovery</li>
+            <li>client-go + dynamic</li>
+            <li>metrics.k8s.io</li>
+          </ul>
+        </div>
+        <div style="text-align:center;font-size:1.5rem;color:var(--text-dim)">&#x2193;</div>
+        <div class="arch-box">
+          <div class="arch-box-title" style="color:var(--text-muted)">Auto-Detected</div>
+          <ul>
+            <li>60+ resource types</li>
+            <li>All installed CRDs</li>
+            <li>ArgoCD Applications</li>
+            <li>Flux CD resources</li>
+            <li>metrics-server</li>
+          </ul>
         </div>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- ── Footer ────────────────────────────────────────────── -->
-  <footer class="py-10 px-4 sm:px-6 lg:px-8 border-t border-white/5">
-    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-5">
-      <div class="flex items-center gap-3">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none" class="w-7 h-7">
-          <circle cx="100" cy="100" r="96" fill="#0f172a" stroke="#3b82f6" stroke-width="4"/>
-          <circle cx="100" cy="100" r="40" fill="#1d4ed8"/>
-          <text x="100" y="118" font-family="system-ui,sans-serif" font-size="56" font-weight="800" fill="white" text-anchor="middle" letter-spacing="-2">K</text>
-        </svg>
-        <span class="text-slate-500 text-sm">
-          Klarity &mdash; <a href="https://github.com/selvarajmurugesan90/klarity/blob/main/LICENSE" class="text-slate-400 hover:text-white transition-colors">Apache 2.0 License</a>
-        </span>
-      </div>
-      <nav class="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-slate-600">
-        <a href="https://github.com/selvarajmurugesan90/klarity" class="hover:text-slate-300 transition-colors">GitHub</a>
-        <a href="https://github.com/selvarajmurugesan90/klarity/releases" class="hover:text-slate-300 transition-colors">Releases</a>
-        <a href="https://github.com/selvarajmurugesan90/klarity/blob/main/docs/DEPLOYMENT.md" class="hover:text-slate-300 transition-colors">Docs</a>
-        <a href="https://github.com/selvarajmurugesan90/klarity/blob/main/CHANGELOG.md" class="hover:text-slate-300 transition-colors">Changelog</a>
-        <a href="https://github.com/selvarajmurugesan90/klarity/issues" class="hover:text-slate-300 transition-colors">Issues</a>
-        <a href="https://github.com/selvarajmurugesan90/klarity/blob/main/CONTRIBUTING.md" class="hover:text-slate-300 transition-colors">Contributing</a>
-        <a href="https://github.com/selvarajmurugesan90/klarity/blob/main/SECURITY.md" class="hover:text-slate-300 transition-colors">Security</a>
-      </nav>
+<div class="divider"></div>
+
+<!-- ── Comparison ────────────────────────────────────────────────── -->
+<section class="section" id="compare">
+  <div class="container">
+    <div class="section-header fade-up">
+      <div class="label">Comparison</div>
+      <h2 class="h1" style="margin-top:12px">Why Klarity?</h2>
+      <p>Designed specifically for GitOps teams who want observability without accidental mutations.</p>
     </div>
-  </footer>
 
-  <script>
-    function showTab(name) {
-      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-      document.querySelectorAll('.tab-btn').forEach(el => {
-        el.classList.remove('tab-active');
-        el.classList.add('tab-inactive');
-      });
-      document.getElementById('content-' + name).classList.remove('hidden');
-      const btn = document.getElementById('tab-' + name);
-      btn.classList.add('tab-active');
-      btn.classList.remove('tab-inactive');
+    <div class="fade-up" style="overflow-x:auto;border-radius:var(--radius-lg);border:1px solid var(--border)">
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th style="width:40%">Feature</th>
+            <th class="th-klarity">Klarity</th>
+            <th>Headlamp</th>
+            <th>k9s</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Read-Only / GitOps-First</td><td><span class="check-y">&#x2713;</span></td><td><span class="check-n">&#x2717;</span></td><td><span class="check-n">&#x2717;</span></td></tr>
+          <tr><td>Built-in User Management</td><td><span class="check-y">&#x2713;</span></td><td><span class="check-n">&#x2717;</span></td><td><span class="check-n">&#x2717;</span></td></tr>
+          <tr><td>Auto-Detect ArgoCD + Flux</td><td><span class="check-y">&#x2713; Zero config</span></td><td><span class="check-n">&#x2717;</span></td><td><span class="check-n">&#x2717;</span></td></tr>
+          <tr><td>Audit Log</td><td><span class="check-y">&#x2713;</span></td><td><span class="check-n">&#x2717;</span></td><td><span class="check-n">&#x2717;</span></td></tr>
+          <tr><td>Web Terminal (kubectl exec)</td><td><span class="check-y">&#x2713;</span></td><td><span class="check-y">&#x2713;</span></td><td><span class="check-y">&#x2713;</span></td></tr>
+          <tr><td>Port Forwarding via Browser</td><td><span class="check-y">&#x2713;</span></td><td><span class="check-y">&#x2713;</span></td><td><span class="check-n">&#x2717; CLI only</span></td></tr>
+          <tr><td>Activities Panel (pinned sessions)</td><td><span class="check-y">&#x2713;</span></td><td><span class="check-p">Partial</span></td><td><span class="check-n">&#x2717;</span></td></tr>
+          <tr><td>Real-time CPU/Memory metrics</td><td><span class="check-y">&#x2713;</span></td><td><span class="check-y">&#x2713;</span></td><td><span class="check-y">&#x2713;</span></td></tr>
+          <tr><td>Top Consumers view</td><td><span class="check-y">&#x2713;</span></td><td><span class="check-n">&#x2717;</span></td><td><span class="check-p">Partial</span></td></tr>
+          <tr><td>Cluster Health Report (HTML)</td><td><span class="check-y">&#x2713;</span></td><td><span class="check-n">&#x2717;</span></td><td><span class="check-n">&#x2717;</span></td></tr>
+          <tr><td>Web-Based (no client install)</td><td><span class="check-y">&#x2713;</span></td><td><span class="check-y">&#x2713;</span></td><td><span class="check-n">&#x2717; CLI only</span></td></tr>
+          <tr><td>Single Binary Deployment</td><td><span class="check-y">&#x2713;</span></td><td><span class="check-n">&#x2717;</span></td><td><span class="check-y">&#x2713;</span></td></tr>
+          <tr><td>OIDC / SSO</td><td><span class="check-y">&#x2713;</span></td><td><span class="check-y">&#x2713;</span></td><td><span class="check-n">&#x2717;</span></td></tr>
+          <tr><td>License</td><td><span class="check-y">Apache 2.0</span></td><td style="color:var(--text-muted)">Apache 2.0</td><td style="color:var(--text-muted)">Apache 2.0</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ── CTA ───────────────────────────────────────────────────────── -->
+<section class="section">
+  <div class="container">
+    <div class="cta-inner fade-up">
+      <div class="label" style="margin-bottom:16px">Ready to Deploy?</div>
+      <h2 class="h1">Get Klarity in 30 Seconds</h2>
+      <p>Free forever. Self-hosted. Open source. No account, no telemetry, no cloud dependency.</p>
+      <div class="cta-links">
+        <a href="#install" class="btn-primary">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Install with Helm
+        </a>
+        <a href="https://github.com/selvarajmurugesan90/klarity" class="btn-secondary" target="_blank">
+          View Documentation
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ── Footer ───────────────────────────────────────────────────── -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <img src="https://raw.githubusercontent.com/selvarajmurugesan90/klarity/main/docs/assets/logo.svg" alt="Klarity" onerror="this.style.display='none'" />
+        <p>Open-source enterprise Kubernetes observability dashboard. Read-only, GitOps-first, zero config.</p>
+        <div style="margin-top:16px">
+          <a href="https://github.com/selvarajmurugesan90/klarity" target="_blank" style="color:var(--text-muted);transition:color 0.2s;display:inline-block" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--text-muted)'">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+          </a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Product</h4>
+        <ul>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#screenshots">Screenshots</a></li>
+          <li><a href="#install">Install</a></li>
+          <li><a href="#compare">Comparison</a></li>
+          <li><a href="#architecture">Architecture</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Resources</h4>
+        <ul>
+          <li><a href="https://github.com/selvarajmurugesan90/klarity/blob/main/README.md" target="_blank">Documentation</a></li>
+          <li><a href="https://github.com/selvarajmurugesan90/klarity/blob/main/docs/DEPLOYMENT.md" target="_blank">Deployment Guide</a></li>
+          <li><a href="https://github.com/selvarajmurugesan90/klarity/blob/main/docs/USER_MANAGEMENT.md" target="_blank">User Management</a></li>
+          <li><a href="https://github.com/selvarajmurugesan90/klarity/releases" target="_blank">Releases</a></li>
+          <li><a href="https://github.com/selvarajmurugesan90/klarity/blob/main/CHANGELOG.md" target="_blank">Changelog</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Community</h4>
+        <ul>
+          <li><a href="https://github.com/selvarajmurugesan90/klarity/issues" target="_blank">Report a Bug</a></li>
+          <li><a href="https://github.com/selvarajmurugesan90/klarity/issues/new" target="_blank">Request Feature</a></li>
+          <li><a href="https://github.com/selvarajmurugesan90/klarity/blob/main/CONTRIBUTING.md" target="_blank">Contributing</a></li>
+          <li><a href="https://github.com/selvarajmurugesan90/klarity/discussions" target="_blank">Discussions</a></li>
+          <li><a href="https://github.com/selvarajmurugesan90/klarity/blob/main/SECURITY.md" target="_blank">Security</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div>
+        &copy; 2026 Klarity Contributors &nbsp;&middot;&nbsp; Licensed under <a href="https://github.com/selvarajmurugesan90/klarity/blob/main/LICENSE" target="_blank" style="color:var(--blue)">Apache 2.0</a>
+      </div>
+      <div class="footer-badges">
+        <span class="footer-badge" style="color:var(--blue)">Apache 2.0</span>
+        <span class="footer-badge" style="color:var(--green)">Go 1.22</span>
+        <span class="footer-badge" style="color:var(--cyan)">React 18</span>
+        <span class="footer-badge" style="color:var(--purple)">K8s 1.26+</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  function openLightbox(src) {
+    document.getElementById('lightbox-img').src = src;
+    document.getElementById('lightbox').classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeLightbox() {
+    document.getElementById('lightbox').classList.remove('active');
+    document.body.style.overflow = '';
+  }
+  document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeLightbox(); });
+
+  function switchTab(btn, panelId) {
+    document.querySelectorAll('.install-tab').forEach(function(t) { t.classList.remove('active'); });
+    document.querySelectorAll('.install-panel').forEach(function(p) { p.classList.remove('active'); });
+    btn.classList.add('active');
+    document.getElementById(panelId).classList.add('active');
+  }
+
+  function copyCode(btn) {
+    var pre = btn.closest('.code-block').querySelector('pre');
+    navigator.clipboard.writeText(pre.innerText).then(function() {
+      btn.textContent = 'Copied!';
+      btn.classList.add('copied');
+      setTimeout(function() { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+    });
+  }
+
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('.fade-up').forEach(function(el) { observer.observe(el); });
+
+  function animateCount(el, target, duration) {
+    var start = performance.now();
+    function step(ts) {
+      var progress = Math.min((ts - start) / duration, 1);
+      var ease = 1 - Math.pow(1 - progress, 3);
+      el.textContent = Math.round(ease * target) + (target === 150 ? '+' : '');
+      if (progress < 1) requestAnimationFrame(step);
     }
+    requestAnimationFrame(step);
+  }
+  var counterObserver = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting) {
+        var el = e.target;
+        var count = parseInt(el.dataset.count);
+        if (count) animateCount(el, count, 1800);
+        counterObserver.unobserve(el);
+      }
+    });
+  }, { threshold: 0.5 });
+  document.querySelectorAll('[data-count]').forEach(function(el) { counterObserver.observe(el); });
 
-    function copyCode(id) {
-      const el = document.getElementById(id);
-      navigator.clipboard.writeText(el.innerText).then(() => {
-        const btn = document.querySelector('[onclick="copyCode(\'' + id + '\')"]');
-        const orig = btn.innerHTML;
-        btn.innerHTML = '<svg class="w-3.5 h-3.5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg><span class="text-green-400 ml-1">Copied!</span>';
-        setTimeout(() => btn.innerHTML = orig, 2000);
-      });
-    }
-  </script>
+  window.addEventListener('scroll', function() {
+    document.querySelector('nav').style.background =
+      window.scrollY > 40 ? 'rgba(2,4,9,0.95)' : 'rgba(2,4,9,0.8)';
+  });
+</script>
 </body>
 </html>
