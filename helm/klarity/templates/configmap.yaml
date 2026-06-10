@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "klarity.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "klarity.labels" . | nindent 4 }}
+data:
+  KD_AUTH_MODE: {{ .Values.config.authMode | quote }}
+  KD_LOG_LEVEL: {{ .Values.config.logLevel | quote }}
+  KD_LOG_FORMAT: {{ .Values.config.logFormat | quote }}
+  KD_SERVER_PORT: {{ .Values.config.port | quote }}
+  KD_SERVER_DEFAULTNS: {{ .Values.config.defaultNamespace | quote }}
+  KD_SERVER_SESSIONTIMEOUT: {{ .Values.config.sessionTimeout | quote }}
+  KD_SERVER_MAXLOGLINES: {{ .Values.config.maxLogLines | quote }}
+  KD_SERVER_METRICSENABLED: {{ .Values.config.metricsEnabled | quote }}
+  {{- if eq .Values.config.authMode "oidc" }}
+  KD_AUTH_OIDC_ISSUERURL: {{ .Values.config.oidc.issuerURL | quote }}
+  KD_AUTH_OIDC_CLIENTID: {{ .Values.config.oidc.clientID | quote }}
+  KD_AUTH_OIDC_REDIRECTURL: {{ .Values.config.oidc.redirectURL | quote }}
+  KD_AUTH_OIDC_SCOPES: {{ .Values.config.oidc.scopes | quote }}
+  {{- end }}

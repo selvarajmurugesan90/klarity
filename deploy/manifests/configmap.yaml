@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: klarity
+  namespace: klarity
+  labels:
+    app.kubernetes.io/name: klarity
+data:
+  KD_AUTH_MODE: "token"
+  KD_LOG_LEVEL: "info"
+  KD_LOG_FORMAT: "json"
+  KD_SERVER_PORT: "8080"
+  KD_SERVER_DEFAULTNS: "default"
+  KD_SERVER_METRICSENABLED: "true"

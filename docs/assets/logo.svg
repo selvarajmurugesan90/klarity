@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
+  <!-- Background circle -->
+  <circle cx="100" cy="100" r="96" fill="#0f172a" stroke="#3b82f6" stroke-width="4"/>
+
+  <!-- Kubernetes-inspired hex ring (outer) -->
+  <path d="M100 20 L168 60 L168 140 L100 180 L32 140 L32 60 Z"
+        fill="none" stroke="#1e3a5f" stroke-width="2" opacity="0.6"/>
+
+  <!-- Kubernetes-inspired hex ring (inner) -->
+  <path d="M100 40 L152 70 L152 130 L100 160 L48 130 L48 70 Z"
+        fill="none" stroke="#2563eb" stroke-width="1.5" opacity="0.4"/>
+
+  <!-- Center glow -->
+  <circle cx="100" cy="100" r="42" fill="#1e3a5f" opacity="0.8"/>
+  <circle cx="100" cy="100" r="40" fill="url(#centerGrad)"/>
+
+  <!-- K letter -->
+  <text x="100" y="118" font-family="'Segoe UI', system-ui, sans-serif"
+        font-size="56" font-weight="800" fill="white"
+        text-anchor="middle" letter-spacing="-2">K</text>
+
+  <!-- Dot accent -->
+  <circle cx="134" cy="72" r="6" fill="#60a5fa"/>
+
+  <!-- Scan lines (observability motif) -->
+  <line x1="58" y1="88"  x2="72"  y2="88"  stroke="#3b82f6" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
+  <line x1="58" y1="100" x2="68"  y2="100" stroke="#60a5fa" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
+  <line x1="58" y1="112" x2="72"  y2="112" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
+  <line x1="128" y1="88"  x2="142" y2="88"  stroke="#3b82f6" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
+  <line x1="132" y1="100" x2="142" y2="100" stroke="#60a5fa" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
+  <line x1="128" y1="112" x2="142" y2="112" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
+
+  <!-- Gradient definitions -->
+  <defs>
+    <radialGradient id="centerGrad" cx="50%" cy="40%" r="60%">
+      <stop offset="0%"   stop-color="#1d4ed8"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </radialGradient>
+  </defs>
+</svg>

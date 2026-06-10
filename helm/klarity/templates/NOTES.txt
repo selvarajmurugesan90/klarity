@@ -1,0 +1,32 @@
+Klarity has been installed!
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  RELEASE:   {{ .Release.Name }}
+  NAMESPACE: {{ .Release.Namespace }}
+  AUTH MODE: {{ .Values.config.authMode }}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. ACCESS
+{{- if .Values.ingress.enabled }}
+   URL: http{{ if .Values.ingress.tls }}s{{ end }}://{{ (first .Values.ingress.hosts).host }}
+{{- else }}
+   kubectl port-forward svc/{{ include "klarity.fullname" . }} 8080:{{ .Values.service.port }} \
+     -n {{ .Release.Namespace }}
+   Open: http://localhost:8080
+{{- end }}
+
+2. AUTHENTICATION (mode: {{ .Values.config.authMode }})
+{{- if eq .Values.config.authMode "internal" }}
+   Default credentials (change immediately!):
+     admin  / admin@123  — admin role
+     viewer / viewer@123 — read-only
+{{- else if eq .Values.config.authMode "token" }}
+   kubectl create token {{ include "klarity.serviceAccountName" . }} \
+     -n {{ .Release.Namespace }} --duration=8h
+{{- else if eq .Values.config.authMode "none" }}
+   WARNING: Authentication is DISABLED. Use only on trusted networks.
+{{- end }}
+
+3. GITOPS: ArgoCD and Flux CD auto-detected if installed.
+
+4. DOCS: https://github.com/selvarajmurugesan90/klarity
