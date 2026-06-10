@@ -1,0 +1,198 @@
+# ============================================================
+# Klarity — Enterprise Kubernetes Observability Dashboard
+# Helm Chart Default Values
+# ============================================================
+# Override with: --set key=value  OR  -f custom-values.yaml
+# Docs: https://github.com/selvarajmurugesan90/klarity/blob/main/docs/DEPLOYMENT.md
+
+# ── Replica & Image ──────────────────────────────────────────
+replicaCount: 1
+
+image:
+  repository: ghcr.io/selvarajmurugesan90/klarity
+  pullPolicy: IfNotPresent
+  tag: ""                     # defaults to chart appVersion
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+# ── Service Account ─────────────────────────────────────────
+serviceAccount:
+  create: true
+  annotations: {}             # e.g. eks.amazonaws.com/role-arn: arn:aws:iam::...
+  name: ""
+
+# ── Pod Metadata ────────────────────────────────────────────
+podAnnotations: {}
+podLabels: {}
+
+# ── Security Contexts ────────────────────────────────────────
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  fsGroup: 1000
+  seccompProfile:
+    type: RuntimeDefault
+
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop: ["ALL"]
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  runAsUser: 1000
+
+# ── Service ─────────────────────────────────────────────────
+service:
+  type: ClusterIP             # ClusterIP | NodePort | LoadBalancer
+  port: 8080
+  nodePort: ""                # only used when type=NodePort
+  annotations: {}
+
+# ── Ingress ─────────────────────────────────────────────────
+ingress:
+  enabled: false
+  className: ""               # e.g. nginx, traefik, alb
+  annotations: {}
+    # cert-manager.io/cluster-issuer: letsencrypt-prod
+    # nginx.ingress.kubernetes.io/ssl-redirect: "true"
+  hosts:
+    - host: klarity.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+  # - secretName: klarity-tls
+  #   hosts: [klarity.example.com]
+
+# ── Resources ───────────────────────────────────────────────
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+# ── Autoscaling ─────────────────────────────────────────────
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+
+# ── Scheduling ──────────────────────────────────────────────
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+# ── Health Probes ────────────────────────────────────────────
+livenessProbe:
+  httpGet:
+    path: /healthz
+    port: http
+  initialDelaySeconds: 30
+  periodSeconds: 15
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+readinessProbe:
+  httpGet:
+    path: /healthz
+    port: http
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  timeoutSeconds: 3
+  failureThreshold: 3
+
+# ── Application Configuration ────────────────────────────────
+config:
+
+  # Auth mode — controls how users log in
+  #
+  # internal  Username/password with bcrypt + JWT (recommended default)
+  #           Default accounts on first install:
+  #             admin  / admin@123  — admin role (must change on first login)
+  #             viewer / viewer@123 — viewer role (must change on first login)
+  #
+  # token     Kubernetes ServiceAccount bearer token
+  #           kubectl create token klarity -n klarity --duration=8h
+  #
+  # oidc      OpenID Connect SSO (Google, GitHub, Okta, Keycloak, Dex...)
+  #           Requires config.oidc.* settings below
+  #
+  # none      No authentication — use only on trusted internal networks
+  #           or behind kubectl port-forward (never expose publicly)
+  authMode: "internal"
+
+  # OIDC configuration (only used when authMode=oidc)
+  oidc:
+    issuerURL: ""             # e.g. https://accounts.google.com
+    clientID: ""              # OAuth2 client ID
+    redirectURL: ""           # e.g. https://klarity.example.com/callback
+    scopes: "openid,profile,email"
+
+  # Logging
+  logLevel: "info"            # debug | info | warn | error
+  logFormat: "json"           # json (production) | text (development)
+
+  # Server
+  port: "8080"
+  defaultNamespace: "default"  # Pre-selected namespace in UI
+  sessionTimeout: "8h"         # JWT expiry (e.g. 1h, 8h, 24h, 7d)
+  maxLogLines: "10000"         # Max log lines buffered per stream
+  metricsEnabled: "true"       # Enable metrics-server CPU/Memory
+
+# OIDC client secret (store in a separate K8s Secret for security)
+# kubectl create secret generic oidc-secret \
+#   --from-literal=oidcClientSecret=<secret> -n klarity
+oidcClientSecretRef:
+  name: ""
+  key: "oidcClientSecret"
+
+# Multi-cluster: mount additional kubeconfigs from a K8s Secret
+# kubectl create secret generic multi-cluster-configs \
+#   --from-file=production=~/.kube/prod.yaml \
+#   --from-file=staging=~/.kube/staging.yaml \
+#   -n klarity
+existingMultiClusterSecret: ""
+
+# ── RBAC ────────────────────────────────────────────────────
+rbac:
+  create: true
+  extraRules: []              # Append custom rules to ClusterRole
+  # - apiGroups: ["custom.io"]
+  #   resources: ["myresources"]
+  #   verbs: ["get", "list", "watch"]
+
+# ── Network Policy ───────────────────────────────────────────
+networkPolicy:
+  enabled: false
+  ingressRules: []
+  egressRules: []
+
+# ── Pod Disruption Budget ────────────────────────────────────
+podDisruptionBudget:
+  enabled: false              # Enable when replicaCount > 1
+  minAvailable: 1
+
+# ── Tmp Volume ───────────────────────────────────────────────
+# Required for read-only root filesystem
+tmpDir:
+  medium: ""                  # "" = disk, "Memory" = tmpfs
+  sizeLimit: 64Mi
+
+# ── Extra Configuration ──────────────────────────────────────
+extraEnv: []
+# - name: MY_VAR
+#   value: "my-value"
+# - name: SECRET_VAR
+#   valueFrom:
+#     secretKeyRef:
+#       name: my-secret
+#       key: my-key
+
+extraVolumes: []
+extraVolumeMounts: []
