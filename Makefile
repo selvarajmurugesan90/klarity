@@ -1,10 +1,10 @@
-REGISTRY     ?= ghcr.io/viavi-solutions
-IMAGE_NAME   ?= kubernetes-dashboard
+REGISTRY     ?= ghcr.io/selvarajmurugesan90
+IMAGE_NAME   ?= klarity
 VERSION      ?= $(shell git describe --tags --always --dirty 2>/dev/null || echo "dev")
 GIT_COMMIT   ?= $(shell git rev-parse --short HEAD 2>/dev/null || echo "unknown")
 BUILD_DATE   ?= $(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
 IMAGE        := $(REGISTRY)/$(IMAGE_NAME):$(VERSION)
-BINARY       := bin/kubernetes-dashboard
+BINARY       := bin/klarity
 
 .PHONY: all build build-frontend build-backend run dev test lint docker-build docker-push \
         helm-package helm-install helm-uninstall generate-manifests clean
@@ -56,21 +56,21 @@ docker-push: docker-build
 	docker push $(IMAGE)
 
 helm-package:
-	helm package helm/kubernetes-dashboard --destination dist/
+	helm package helm/klarity --destination dist/
 
 helm-install:
-	helm upgrade --install kubernetes-dashboard helm/kubernetes-dashboard \
-		--namespace kubernetes-dashboard \
+	helm upgrade --install klarity helm/klarity \
+		--namespace klarity \
 		--create-namespace \
 		--set image.tag=$(VERSION)
 
 helm-uninstall:
-	helm uninstall kubernetes-dashboard -n kubernetes-dashboard
+	helm uninstall klarity -n klarity
 
 generate-manifests:
 	@mkdir -p dist
-	helm template kubernetes-dashboard helm/kubernetes-dashboard \
-		--namespace kubernetes-dashboard > dist/kubernetes-dashboard.yaml
+	helm template klarity helm/klarity \
+		--namespace klarity > dist/klarity.yaml
 
 clean:
 	rm -rf bin/ web/dist dist/

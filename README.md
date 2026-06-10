@@ -17,6 +17,9 @@
 [![Kubernetes](https://img.shields.io/badge/Kubernetes-1.26+-326CE5?style=flat-square&logo=kubernetes)](https://kubernetes.io)
 [![React](https://img.shields.io/badge/React-18-61DAFB?style=flat-square&logo=react)](https://reactjs.org)
 [![Release](https://img.shields.io/github/v/release/selvarajmurugesan90/klarity?style=flat-square)](https://github.com/selvarajmurugesan90/klarity/releases)
+[![CI](https://img.shields.io/github/actions/workflow/status/selvarajmurugesan90/klarity/ci.yml?branch=main&label=CI&style=flat-square)](https://github.com/selvarajmurugesan90/klarity/actions/workflows/ci.yml)
+[![Docker](https://img.shields.io/badge/GHCR-ghcr.io%2Fselvarajmurugesan90%2Fklarity-blue?style=flat-square&logo=docker)](https://github.com/selvarajmurugesan90/klarity/pkgs/container/klarity)
+[![Artifact Hub](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/klarity&style=flat-square)](https://artifacthub.io/packages/helm/klarity/klarity)
 
 <br />
 
@@ -58,6 +61,43 @@ Klarity fills the gap that GitOps creates: you need full visibility into what's 
 - **Diagnose** — log streaming, web terminal, port forwarding
 - **Collaborate** — shareable audit log, health reports, user management
 - **Integrate** — automatic ArgoCD and Flux CD visibility
+
+---
+
+## Screenshots
+
+<div align="center">
+
+<table>
+<tr>
+<td align="center" width="50%">
+<img src="docs/assets/screenshots/Klarity-Overview-Page.jpg" alt="Cluster Overview" width="100%">
+<br><sub><b>Cluster Overview</b> — live metrics, workload health, node resource usage</sub>
+</td>
+<td align="center" width="50%">
+<img src="docs/assets/screenshots/Klarity-Resources-Pod.jpg" alt="Pods List" width="100%">
+<br><sub><b>Pods</b> — real-time CPU &amp; Memory per pod with inline progress bars</sub>
+</td>
+</tr>
+<tr>
+<td align="center" width="50%">
+<img src="docs/assets/screenshots/Klarity-Top-Consumers.jpg" alt="Top Resource Consumers" width="100%">
+<br><sub><b>Top Resource Consumers</b> — sort by CPU or Memory across all pods/namespaces</sub>
+</td>
+<td align="center" width="50%">
+<img src="docs/assets/screenshots/Klarity-Settings-Page.jpg" alt="Settings" width="100%">
+<br><sub><b>Settings</b> — namespace defaults, refresh interval, display preferences</sub>
+</td>
+</tr>
+<tr>
+<td align="center" colspan="2">
+<img src="docs/assets/screenshots/Klarity-Login-Page.jpg" alt="Login Page" width="50%">
+<br><sub><b>Login</b> — internal auth, Kubernetes token, or OIDC/SSO</sub>
+</td>
+</tr>
+</table>
+
+</div>
 
 ---
 
@@ -158,7 +198,7 @@ Open [http://localhost:8080](http://localhost:8080) — Login: `admin` / `admin@
 ### Option 2 — Helm (Recommended for Production)
 
 ```bash
-helm repo add klarity https://selvarajmurugesan90.github.io/charts
+helm repo add klarity https://selvarajmurugesan90.github.io/klarity
 helm repo update
 
 helm upgrade --install klarity klarity/klarity \

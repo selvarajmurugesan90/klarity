@@ -16,13 +16,13 @@ This guide covers production deployment options for the Klarity.
 
 ### Add the Helm Repository
 ```bash
-helm repo add k8s-dashboard https://selvarajmurugesan90.github.io/charts
+helm repo add klarity https://selvarajmurugesan90.github.io/klarity
 helm repo update
 ```
 
 ### Install
 ```bash
-helm upgrade --install klarity selvarajmurugesan90/klarity \
+helm upgrade --install klarity klarity/klarity \
   --namespace klarity \
   --create-namespace \
   --set config.authMode=internal

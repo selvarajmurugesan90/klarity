@@ -1,14 +1,14 @@
 #!/bin/bash
 set -euo pipefail
 
-NAMESPACE="kubernetes-dashboard"
-RELEASE="kubernetes-dashboard"
-IMAGE="kubernetes-dashboard:latest"
-CHART_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/helm/kubernetes-dashboard"
+NAMESPACE="klarity"
+RELEASE="klarity"
+IMAGE="klarity:latest"
+CHART_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/helm/klarity"
 CLUSTER_NAME="${CLUSTER_NAME:-selvaraj}"
 AUTH_MODE="${AUTH_MODE:-none}"
 
-echo "=== Kubernetes Dashboard Deployment ==="
+echo "=== Klarity Deployment ==="
 echo "Namespace:  $NAMESPACE"
 echo "Image:      $IMAGE"
 echo "Chart:      $CHART_DIR"
@@ -33,7 +33,7 @@ fi
 echo "[3/5] Deploying with Helm..."
 helm upgrade --install "$RELEASE" "$CHART_DIR" \
   --namespace "$NAMESPACE" \
-  --set image.repository=kubernetes-dashboard \
+  --set image.repository=klarity \
   --set image.tag=latest \
   --set image.pullPolicy=Never \
   --set "config.authMode=$AUTH_MODE" \
@@ -50,7 +50,7 @@ echo ""
 kubectl get all -n "$NAMESPACE"
 echo ""
 
-POD=$(kubectl get pod -n "$NAMESPACE" -l "app.kubernetes.io/name=kubernetes-dashboard" -o jsonpath='{.items[0].metadata.name}' 2>/dev/null || echo "")
+POD=$(kubectl get pod -n "$NAMESPACE" -l "app.kubernetes.io/name=klarity" -o jsonpath='{.items[0].metadata.name}' 2>/dev/null || echo "")
 if [ -n "$POD" ]; then
   echo "Pod: $POD"
   echo "Health check:"

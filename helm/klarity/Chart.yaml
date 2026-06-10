@@ -19,6 +19,3 @@ maintainers:
 annotations:
   artifacthub.io/category: monitoring-logging
   artifacthub.io/license: Apache-2.0
-  artifacthub.io/signKey: |
-    fingerprint: ABCDEF1234567890
-    url: https://github.com/selvarajmurugesan90/klarity/raw/main/pgp.pub
