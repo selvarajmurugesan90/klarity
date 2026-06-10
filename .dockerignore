@@ -1,0 +1,9 @@
+.git
+web/node_modules
+bin/
+dist/
+tmp/
+*.log
+.DS_Store
+.env
+vendor/
