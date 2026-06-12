@@ -30,7 +30,7 @@ LABEL org.opencontainers.image.title="Klarity" \
       org.opencontainers.image.source="https://github.com/selvarajmurugesan90/klarity" \
       org.opencontainers.image.licenses="Apache-2.0"
 
-RUN apk add --no-cache ca-certificates tzdata wget && \
+RUN apk add --no-cache ca-certificates tzdata wget groff less aws-cli && \
     addgroup -g 1000 dashboard && \
     adduser -u 1000 -G dashboard -s /bin/sh -D dashboard && \
     mkdir -p /home/dashboard/.kube && \
@@ -39,6 +39,7 @@ RUN apk add --no-cache ca-certificates tzdata wget && \
 COPY --from=backend-builder /kubernetes-dashboard /usr/local/bin/kubernetes-dashboard
 
 USER 1000:1000
+ENV HOME=/home/dashboard
 EXPOSE 8080
 HEALTHCHECK --interval=30s --timeout=5s --start-period=15s \
   CMD wget -qO- http://localhost:8080/healthz || exit 1

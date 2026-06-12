@@ -13,6 +13,7 @@ services:
       - KD_SERVER_METRICSENABLED=true
     volumes:
       - ${KUBECONFIG:-~/.kube/config}:/home/dashboard/.kube/config:ro
+      - ~/.aws:/home/dashboard/.aws:ro # aws config
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://localhost:8080/healthz"]
