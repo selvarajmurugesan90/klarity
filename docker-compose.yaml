@@ -11,9 +11,11 @@ services:
       - KD_LOG_LEVEL=info
       - KD_LOG_FORMAT=text
       - KD_SERVER_METRICSENABLED=true
+      - AWS_CLI_CACHE_DIR=/tmp/.aws/cli 
+      - AWS_CLI_HISTORY_FILE=/tmp/.aws/gcl_history 
     volumes:
       - ${KUBECONFIG:-~/.kube/config}:/home/dashboard/.kube/config:ro
-      - ~/.aws:/home/dashboard/.aws:ro # aws config
+      - ${AWSCONFIG:-~/.aws}:/home/dashboard/.aws:ro 
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://localhost:8080/healthz"]
