@@ -37,7 +37,7 @@ function ArgoCDSection() {
   const navigate = useNavigate()
   const { data, isLoading } = useQuery({
     queryKey: ['argocd-apps'],
-    queryFn: () => api.get('/api/v1/gitops/argocd/apps?pageSize=50').then(r => r.data?.data ?? []),
+    queryFn: () => api.get('/gitops/argocd/apps?pageSize=50').then(r => r.data?.data ?? []),
     refetchInterval: 30_000,
   })
   const apps = (data ?? []) as Array<Record<string, unknown>>
@@ -115,17 +115,17 @@ function FluxSection() {
 
   const { data: kData } = useQuery({
     queryKey: ['flux-kustomizations'],
-    queryFn: () => api.get('/api/v1/gitops/flux/kustomizations?pageSize=50').then(r => r.data?.data ?? []),
+    queryFn: () => api.get('/gitops/flux/kustomizations?pageSize=50').then(r => r.data?.data ?? []),
     refetchInterval: 30_000,
   })
   const { data: hData } = useQuery({
     queryKey: ['flux-helmreleases'],
-    queryFn: () => api.get('/api/v1/gitops/flux/helmreleases?pageSize=50').then(r => r.data?.data ?? []),
+    queryFn: () => api.get('/gitops/flux/helmreleases?pageSize=50').then(r => r.data?.data ?? []),
     refetchInterval: 30_000,
   })
   const { data: gData } = useQuery({
     queryKey: ['flux-gitrepos'],
-    queryFn: () => api.get('/api/v1/gitops/flux/gitrepositories?pageSize=50').then(r => r.data?.data ?? []),
+    queryFn: () => api.get('/gitops/flux/gitrepositories?pageSize=50').then(r => r.data?.data ?? []),
     refetchInterval: 30_000,
   })
 
@@ -243,7 +243,7 @@ function FluxSection() {
 export default function GitOpsDashboard() {
   const { data: statusData, isLoading } = useQuery({
     queryKey: ['gitops-status'],
-    queryFn:  () => api.get('/api/v1/gitops/status').then(r => r.data?.data),
+    queryFn:  () => api.get('/gitops/status').then(r => r.data?.data),
     refetchInterval: 60_000,
   })
 
