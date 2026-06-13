@@ -17,26 +17,42 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # ── Frontend ──────────────────────────────────────────────────────────────
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install frontend dependencies
+        run: npm install
+        working-directory: web
+
+      - name: Build frontend
+        run: npm run build
+        working-directory: web
+
+      # Copy built frontend to the embed path expected by internal/assets/assets.go
+      - name: Copy frontend dist for Go embed
+        run: |
+          mkdir -p internal/assets/web
+          cp -r web/dist internal/assets/web/dist
+
+      # ── Backend ───────────────────────────────────────────────────────────────
       - uses: actions/setup-go@v5
         with:
           go-version-file: go.mod
           cache: true
+
+      - name: Tidy Go modules
+        run: go mod tidy
 
       - name: Go lint
         uses: golangci/golangci-lint-action@v6
         with:
           version: v1.60
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-          cache-dependency-path: web/package-lock.json
-
-      - run: npm ci
-        working-directory: web
-
-      - run: npm run lint
+      # ── Frontend lint ─────────────────────────────────────────────────────────
+      - name: Frontend lint
+        run: npm run lint
         working-directory: web
 
   test:
@@ -45,23 +61,38 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # ── Frontend ──────────────────────────────────────────────────────────────
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install frontend dependencies
+        run: npm install
+        working-directory: web
+
+      - name: Build frontend
+        run: npm run build
+        working-directory: web
+
+      # Copy built frontend to the embed path expected by internal/assets/assets.go
+      - name: Copy frontend dist for Go embed
+        run: |
+          mkdir -p internal/assets/web
+          cp -r web/dist internal/assets/web/dist
+
+      # ── Backend ───────────────────────────────────────────────────────────────
       - uses: actions/setup-go@v5
         with:
           go-version-file: go.mod
           cache: true
 
+      - name: Tidy Go modules
+        run: go mod tidy
+
       - name: Go tests
         run: go test ./... -count=1 -timeout 120s
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-          cache-dependency-path: web/package-lock.json
-
-      - run: npm ci
-        working-directory: web
-
+      # ── Frontend tests ────────────────────────────────────────────────────────
       - name: Frontend tests
         run: npm test -- --run
         working-directory: web
