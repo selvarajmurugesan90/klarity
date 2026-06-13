@@ -1,4 +1,4 @@
-import { Bell, RefreshCw, User, LogOut, ChevronDown, Search, Keyboard, Settings, Shield, Eye, Crown, Activity } from 'lucide-react'
+import { Bell, RefreshCw, User, LogOut, ChevronDown, Search, Keyboard, Settings, Shield, Eye, Crown } from 'lucide-react'
 import { ActivityPanelToggle } from '@/components/common/ActivityPanel'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useNavigate, useLocation } from 'react-router-dom'

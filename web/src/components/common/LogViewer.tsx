@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { WSClient, logsWSUrl } from '@/lib/websocket'
 import { Download, Search, X, ArrowDown, Filter } from 'lucide-react'
 import { downloadText } from '@/lib/utils'

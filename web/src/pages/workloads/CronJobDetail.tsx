@@ -7,7 +7,7 @@ import { StatusBadge } from '@/components/common/StatusBadge'
 import YamlEditor from '@/components/common/YamlEditor'
 import { ArrowLeft, Clock } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { InfoSection, InfoRow, SecurityContextSection, ContainerResourcesSection, EnvVarsSection, VolumesSection, SchedulingSection, LabelsAnnotations, ContainerCard, type K8sContainer, type K8sPodSpec } from '@/components/common/ResourceDetailSections'
+import { InfoSection, InfoRow, SecurityContextSection, ContainerResourcesSection, EnvVarsSection, VolumesSection, LabelsAnnotations, ContainerCard, type K8sContainer, type K8sPodSpec } from '@/components/common/ResourceDetailSections'
 
 type Tab = 'overview' | 'containers' | 'resources' | 'security' | 'env' | 'storage' | 'yaml'
 
@@ -17,7 +17,7 @@ export default function CronJobDetail() {
   const [tab, setTab] = useState<Tab>('overview')
 
   const { data } = useQuery({ queryKey: ['cronjob', namespace, name], queryFn: () => cronJobsApi.get(namespace!, name!) })
-  const { data: yamlData } = useQuery({ queryKey: ['cronjob-yaml', namespace, name], queryFn: async () => { const r = await import('@/lib/api'); return r.api.get(`/namespaces/${namespace}/cronjobs/${name}/yaml`).then(rr => rr.data) }, enabled: tab === 'yaml' })
+  const { data: _yamlData } = useQuery({ queryKey: ['cronjob-yaml', namespace, name], queryFn: async () => { const r = await import('@/lib/api'); return r.api.get(`/namespaces/${namespace}/cronjobs/${name}/yaml`).then(rr => rr.data) }, enabled: tab === 'yaml' })
 
   const cj     = data?.data as Record<string,unknown> | undefined
   const spec   = cj?.spec   as Record<string,unknown> | undefined

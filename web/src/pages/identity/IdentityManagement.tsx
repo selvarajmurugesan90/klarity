@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { identityApi } from '@/lib/api'
 import { ResourceTable, Column } from '@/components/common/ResourceTable'
-import { Users, Shield, UserCheck, Database, ChevronDown, ChevronRight } from 'lucide-react'
+import { Users, UserCheck, Database, ChevronDown, ChevronRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface BoundRole {

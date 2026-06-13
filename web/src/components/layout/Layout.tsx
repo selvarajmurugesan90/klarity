@@ -5,7 +5,7 @@ import GlobalSearch from '@/components/common/GlobalSearch'
 import ActivityPanel from '@/components/common/ActivityPanel'
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts'
 import { useActivityStore } from '@/store/activities'
-import { cn } from '@/lib/utils'
+
 
 function ShortcutsProvider({ children }: { children: React.ReactNode }) {
   useKeyboardShortcuts()

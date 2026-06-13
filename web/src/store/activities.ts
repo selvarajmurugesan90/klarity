@@ -44,7 +44,7 @@ interface ActivityState {
 
 let nextId = 1
 
-export const useActivityStore = create<ActivityState>((set, get) => ({
+export const useActivityStore = create<ActivityState>((set) => ({
   activities: [],
   panelOpen: false,
   activeId: null,

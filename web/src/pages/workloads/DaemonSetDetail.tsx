@@ -7,7 +7,7 @@ import { StatusBadge } from '@/components/common/StatusBadge'
 import YamlEditor from '@/components/common/YamlEditor'
 import { ArrowLeft, Server } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { InfoSection, InfoRow, SecurityContextSection, ContainerResourcesSection, EnvVarsSection, VolumesSection, SchedulingSection, LabelsAnnotations, ContainerCard, type K8sContainer, type K8sPodSpec } from '@/components/common/ResourceDetailSections'
+import { InfoSection, InfoRow, SecurityContextSection, ContainerResourcesSection, EnvVarsSection, VolumesSection, LabelsAnnotations, ContainerCard, type K8sContainer, type K8sPodSpec } from '@/components/common/ResourceDetailSections'
 
 type Tab = 'overview' | 'containers' | 'resources' | 'security' | 'env' | 'storage' | 'yaml'
 
@@ -17,7 +17,7 @@ export default function DaemonSetDetail() {
   const [tab, setTab] = useState<Tab>('overview')
 
   const { data } = useQuery({ queryKey: ['daemonset', namespace, name], queryFn: () => daemonSetsApi.get(namespace!, name!) })
-  const { data: yamlData } = useQuery({ queryKey: ['daemonset-yaml', namespace, name], queryFn: async () => { const r = await import('@/lib/api'); return r.api.get(`/namespaces/${namespace}/daemonsets/${name}/yaml`).then(rr => rr.data) }, enabled: tab === 'yaml' })
+  const { data: _yamlData } = useQuery({ queryKey: ['daemonset-yaml', namespace, name], queryFn: async () => { const r = await import('@/lib/api'); return r.api.get(`/namespaces/${namespace}/daemonsets/${name}/yaml`).then(rr => rr.data) }, enabled: tab === 'yaml' })
 
   const res    = data?.data as Record<string,unknown> | undefined
   const spec   = res?.spec   as Record<string,unknown> | undefined

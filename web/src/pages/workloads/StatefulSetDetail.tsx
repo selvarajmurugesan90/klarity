@@ -7,7 +7,7 @@ import { StatusBadge } from '@/components/common/StatusBadge'
 import YamlEditor from '@/components/common/YamlEditor'
 import { ArrowLeft, Database } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { InfoSection, InfoRow, SecurityContextSection, ContainerResourcesSection, EnvVarsSection, VolumesSection, SchedulingSection, LabelsAnnotations, ContainerCard, type K8sContainer, type K8sPodSpec } from '@/components/common/ResourceDetailSections'
+import { InfoSection, InfoRow, SecurityContextSection, ContainerResourcesSection, EnvVarsSection, VolumesSection, LabelsAnnotations, ContainerCard, type K8sContainer, type K8sPodSpec } from '@/components/common/ResourceDetailSections'
 
 type Tab = 'overview' | 'containers' | 'resources' | 'security' | 'env' | 'storage' | 'yaml'
 
@@ -17,7 +17,7 @@ export default function StatefulSetDetail() {
   const [tab, setTab] = useState<Tab>('overview')
 
   const { data } = useQuery({ queryKey: ['statefulset', namespace, name], queryFn: () => statefulSetsApi.get(namespace!, name!) })
-  const { data: yamlData } = useQuery({ queryKey: ['statefulset-yaml', namespace, name], queryFn: async () => { const r = await import('@/lib/api'); return r.api.get(`/namespaces/${namespace}/statefulsets/${name}/yaml`).then(rr => rr.data) }, enabled: tab === 'yaml' })
+  const { data: _yamlData } = useQuery({ queryKey: ['statefulset-yaml', namespace, name], queryFn: async () => { const r = await import('@/lib/api'); return r.api.get(`/namespaces/${namespace}/statefulsets/${name}/yaml`).then(rr => rr.data) }, enabled: tab === 'yaml' })
 
   const res    = data?.data as Record<string,unknown> | undefined
   const spec   = res?.spec   as Record<string,unknown> | undefined

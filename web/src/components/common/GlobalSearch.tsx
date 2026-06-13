@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import { searchApi } from '@/lib/api'
 import { Search, Box, Globe, Server, Database, FileCode, Key, Layers, X, ArrowRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { formatAge } from '@/lib/utils'
+
 
 const KIND_ICONS: Record<string, React.ReactNode> = {
   Pod: <Box size={14} className="text-green-400" />,
@@ -138,7 +138,7 @@ export default function GlobalSearch() {
                       {KIND_ICONS[kind] ?? KIND_ICONS.default}
                       {kind}
                     </div>
-                    {kindResults.map((result, globalIdx) => {
+                    {kindResults.map((result, _globalIdx) => {
                       const idx = results.indexOf(result)
                       return (
                         <button

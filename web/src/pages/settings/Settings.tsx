@@ -9,8 +9,8 @@ const UserManagementPage = lazy(() => import('./UserManagement'))
 import {
   Settings2, User, Shield, Palette, Server, GitBranch, Bell,
   Lock, Info, Save, RotateCcw, Plus, Trash2, Check, AlertTriangle,
-  Eye, EyeOff, Copy, RefreshCw, Database, Globe, Clock, Layers,
-  ChevronRight, ExternalLink, Terminal,
+  Eye, EyeOff, Copy, RefreshCw,
+  ChevronRight, ExternalLink,
 } from 'lucide-react'
 import { cn, copyToClipboard } from '@/lib/utils'
 
@@ -179,116 +179,12 @@ function GeneralTab() {
   )
 }
 
-function UserManagementTab() {
-  const { data, isLoading } = useQuery({
-    queryKey: ['identity', 1, '', false, ''],
-    queryFn: () => identityApi.listSubjects({ page: 1, pageSize: 50, showSystem: false }),
-  })
-  const subjects = (data?.data ?? []) as Array<{
-    kind: string; name: string; namespace?: string
-    roles: Array<{ roleName: string; roleKind: string; bindingNamespace?: string }>
-  }>
-  const [tokenTarget, setTokenTarget] = useState<string | null>(null)
-  const [copiedToken, setCopiedToken] = useState(false)
-
-  function copyCommand(ns: string, name: string) {
-    const cmd = `kubectl create token ${name} -n ${ns} --duration=8h`
-    copyToClipboard(cmd)
-    setCopiedToken(true)
-    setTimeout(() => setCopiedToken(false), 2000)
-  }
-
-  return (
-    <div className="space-y-6">
-      <Section
-        title="Identity Subjects"
-        description="Users, groups, and service accounts with cluster access. Manage their RBAC roles from the Identity page."
-      >
-        <div className="flex justify-end mb-2">
-          <a href="/identity" className="flex items-center gap-1.5 text-sm text-blue-500 hover:text-blue-700">
-            Full Identity Management <ExternalLink size={13} />
-          </a>
-        </div>
-
-        {isLoading ? (
-          <div className="text-gray-400 text-sm text-center py-8">Loading identities...</div>
-        ) : (
-          <div className="space-y-2">
-            {subjects.slice(0, 20).map((s, i) => (
-              <div key={i} className="flex items-start justify-between p-3 bg-gray-50 rounded-xl border border-gray-100">
-                <div className="flex items-start gap-3">
-                  <div className={cn(
-                    'w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 mt-0.5',
-                    s.kind === 'User' ? 'bg-blue-100 text-blue-700' :
-                    s.kind === 'Group' ? 'bg-purple-100 text-purple-700' : 'bg-green-100 text-green-700'
-                  )}>
-                    {s.name[0]?.toUpperCase()}
-                  </div>
-                  <div>
-                    <p className="font-medium text-sm text-gray-900">{s.name}</p>
-                    <div className="flex items-center gap-2 mt-0.5">
-                      <span className={cn('text-xs px-1.5 py-0.5 rounded-full border', {
-                        'bg-blue-50 text-blue-700 border-blue-200': s.kind === 'User',
-                        'bg-purple-50 text-purple-700 border-purple-200': s.kind === 'Group',
-                        'bg-green-50 text-green-700 border-green-200': s.kind === 'ServiceAccount',
-                      })}>
-                        {s.kind}
-                      </span>
-                      {s.namespace && <span className="text-xs text-gray-400">{s.namespace}</span>}
-                      <span className="text-xs text-gray-400">{s.roles.length} role{s.roles.length !== 1 ? 's' : ''}</span>
-                    </div>
-                  </div>
-                </div>
-
-                {s.kind === 'ServiceAccount' && s.namespace && (
-                  <button
-                    onClick={() => {
-                      setTokenTarget(`${s.namespace}/${s.name}`)
-                      copyCommand(s.namespace!, s.name)
-                    }}
-                    className="flex items-center gap-1.5 px-2.5 py-1 text-xs bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
-                    title="Copy token generation command"
-                  >
-                    {copiedToken && tokenTarget === `${s.namespace}/${s.name}` ? <Check size={12} className="text-green-500" /> : <Copy size={12} />}
-                    Get Token
-                  </button>
-                )}
-              </div>
-            ))}
-            {subjects.length > 20 && (
-              <p className="text-xs text-gray-400 text-center py-2">
-                Showing 20 of {subjects.length}. <a href="/identity" className="text-blue-500">View all →</a>
-              </p>
-            )}
-          </div>
-        )}
-      </Section>
-
-      <Section title="Token Generation" description="Generate short-lived tokens for ServiceAccounts">
-        <div className="bg-slate-900 rounded-xl p-4 font-mono text-sm text-green-400">
-          <p className="text-slate-400 text-xs mb-2"># Generate 24h token for the dashboard service account</p>
-          <p>kubectl create token klarity \</p>
-          <p className="pl-4">-n klarity --duration=24h</p>
-        </div>
-        <div className="bg-slate-900 rounded-xl p-4 font-mono text-sm text-green-400">
-          <p className="text-slate-400 text-xs mb-2"># Create a read-only viewer account</p>
-          <p>kubectl create serviceaccount dashboard-viewer -n default</p>
-          <p>kubectl create clusterrolebinding dashboard-viewer \</p>
-          <p className="pl-4">--clusterrole=view --serviceaccount=default:dashboard-viewer</p>
-          <p>kubectl create token dashboard-viewer -n default</p>
-        </div>
-      </Section>
-    </div>
-  )
-}
-
 function AuthTab() {
   const { authMode, setAuthMode } = useAuthStore()
   const s = useSettingsStore()
   const [oidcSettings, setOidc] = useState({
     issuerURL: '', clientID: '', redirectURL: '', scopes: 'openid,profile,email',
   })
-  const [saved, setSaved] = useState(false)
 
   return (
     <div className="space-y-6">
@@ -368,7 +264,7 @@ function AuthTab() {
 }
 
 function ClustersTab() {
-  const { clusters, currentCluster, setCluster } = useClusterStore()
+  const { clusters, setCluster } = useClusterStore()
   const { data: versionData } = useQuery({
     queryKey: ['version'],
     queryFn: () => clusterApi.version(),

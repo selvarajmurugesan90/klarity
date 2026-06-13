@@ -15,7 +15,7 @@ RUN go mod download || true
 COPY . .
 # Copy frontend build into the embed path expected by internal/assets/assets.go
 COPY --from=frontend-builder /app/web/dist ./internal/assets/web/dist
-RUN go mod tidy
+RUN GONOSUMDB=* GOFLAGS=-mod=mod go mod tidy
 ARG VERSION=dev
 ARG GIT_COMMIT=unknown
 ARG BUILD_DATE=unknown

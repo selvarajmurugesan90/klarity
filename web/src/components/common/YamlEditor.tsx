@@ -14,7 +14,6 @@ interface Props {
 export default function YamlEditor({
   yaml,
   filename = 'resource.yaml',
-  readOnly = true,
   loading = false,
   error,
 }: Props) {

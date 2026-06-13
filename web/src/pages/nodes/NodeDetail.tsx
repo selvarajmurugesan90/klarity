@@ -1,13 +1,12 @@
 import { useParams, useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import { nodesApi, metricsApi, podsApi, metricsApi as mApi } from '@/lib/api'
+import { nodesApi, metricsApi, metricsApi as mApi } from '@/lib/api'
 import type { PodMetricsSummary } from '@/lib/api'
 import { ArrowLeft, Server, Cpu, MemoryStick, RefreshCw, CheckCircle, XCircle, Activity } from 'lucide-react'
 import { StatusBadge } from '@/components/common/StatusBadge'
 import { formatAge } from '@/lib/utils'
 import { cn } from '@/lib/utils'
 import { useState } from 'react'
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 
 // ── Large utilisation ring / arc ──────────────────────────────────────────────
 function GaugeCard({ label, pct, used, total, color, icon }: {

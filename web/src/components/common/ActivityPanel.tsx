@@ -3,8 +3,8 @@ import { useActivityStore, Activity } from '@/store/activities'
 import LogViewer from './LogViewer'
 import Terminal from './Terminal'
 import {
-  X, Minus, Maximize2, Minimize2, Terminal as TermIcon,
-  FileText, Network, ChevronLeft, ChevronRight, Activity as ActivityIcon,
+  X, Terminal as TermIcon,
+  FileText, Network, Activity as ActivityIcon,
   ExternalLink,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'

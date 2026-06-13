@@ -7,7 +7,7 @@ import { StatusBadge } from '@/components/common/StatusBadge'
 import YamlEditor from '@/components/common/YamlEditor'
 import { ArrowLeft, Cpu, CheckCircle, XCircle, Clock } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { InfoSection, InfoRow, SecurityContextSection, ContainerResourcesSection, EnvVarsSection, VolumesSection, SchedulingSection, LabelsAnnotations, ContainerCard, type K8sContainer, type K8sPodSpec } from '@/components/common/ResourceDetailSections'
+import { InfoSection, InfoRow, SecurityContextSection, ContainerResourcesSection, EnvVarsSection, VolumesSection, LabelsAnnotations, ContainerCard, type K8sContainer, type K8sPodSpec } from '@/components/common/ResourceDetailSections'
 
 type Tab = 'overview' | 'containers' | 'resources' | 'security' | 'env' | 'storage' | 'yaml'
 

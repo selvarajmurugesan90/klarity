@@ -35,7 +35,7 @@ replicaCount: 2
 
 image:
   repository: ghcr.io/selvarajmurugesan90/klarity
-  tag: "1.0.0"
+  tag: "1.0.1"
 
 config:
   authMode: internal

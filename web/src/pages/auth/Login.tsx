@@ -3,7 +3,7 @@ import { useNavigate, Navigate } from 'react-router-dom'
 import { api, internalAuthApi, authApi } from '@/lib/api'
 import { useAuthStore } from '@/store/auth'
 import type { SafeUser } from '@/lib/api'
-import { Server, Eye, EyeOff, KeyRound, AlertCircle, CheckCircle, Lock } from 'lucide-react'
+import { Server, Eye, EyeOff, AlertCircle, CheckCircle, Lock } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 // ── Internal login (username + password) ─────────────────────────────────────
