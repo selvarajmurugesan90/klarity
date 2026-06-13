@@ -9,9 +9,11 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 - Remove duplicated `/api/v1` prefix in frontend API calls — Sidebar, ArgoCD, FluxCD, GitOps Dashboard, Port Forwarding pages were double-prefixing routes since the axios client already sets `baseURL: /api/v1` (contributed by @Raznak, closes #2)
-- Resolve all 66 ESLint `@typescript-eslint/no-unused-vars` errors across 29 frontend files (contributed by @Raznak, closes #4)
+- Resolve all `@typescript-eslint/no-unused-vars` errors and `react-hooks/exhaustive-deps` warnings across all frontend files (contributed by @Raznak, closes #4)
+- Fix `useCallback` missing deps in `GlobalSearch` — inline navigate logic, wrap `results` in `useMemo` to stabilise dependency
+- Remove unused `_good`/`_warn` props from `SecBadge` in `ResourceDetailSections`
 - Fix `react-hooks/exhaustive-deps` warnings in `useKeyboardShortcuts`, `Login`, and `Events` — wrap constant maps in `useMemo`, add proper `useEffect` dependencies
-- Remove unused `_yamlData` destructuring in `CronJobDetail`, `DaemonSetDetail`, `StatefulSetDetail` — YAML tab renders from the primary query via `JSON.stringify`
+- Remove unused `_yamlData` destructuring in `CronJobDetail`, `DaemonSetDetail`, `StatefulSetDetail`
 - Fix Helm `release.yml` workflow to only update `appVersion` on release tag — `version` (chart structure) is now independent of Docker image releases
 - Remove broken ArtifactHub badge from README — package not yet registered at artifacthub.io
 
@@ -25,6 +27,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Add `--timeout=5m` to golangci-lint to prevent 60s default timeout
 - Add `--passWithNoTests` to vitest for projects without test files
 - Use `GONOSUMDB=* GOFLAGS=-mod=mod` in Docker `go build` for reliable offline-friendly builds
+- Add `RUN npm run lint` to Dockerfile frontend stage so Docker build catches ESLint errors before any push
 
 ---
 

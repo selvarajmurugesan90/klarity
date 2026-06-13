@@ -2,7 +2,7 @@ apiVersion: v2
 name: klarity
 description: Enterprise Kubernetes observability dashboard — GitOps-first, read-only by design, with auto-discovery, user management, and GitOps integration
 type: application
-version: 1.0.0
+version: 1.0.1
 appVersion: "1.0.1"
 keywords:
   - kubernetes
