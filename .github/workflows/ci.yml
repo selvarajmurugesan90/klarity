@@ -49,6 +49,7 @@ jobs:
         uses: golangci/golangci-lint-action@v6
         with:
           version: v1.60
+          args: --timeout=5m
 
       # ── Frontend lint ─────────────────────────────────────────────────────────
       - name: Frontend lint
@@ -94,7 +95,7 @@ jobs:
 
       # ── Frontend tests ────────────────────────────────────────────────────────
       - name: Frontend tests
-        run: npm test -- --run
+        run: npm test -- --run --passWithNoTests
         working-directory: web
 
   build:

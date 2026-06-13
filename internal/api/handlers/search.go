@@ -21,14 +21,6 @@ type SearchResult struct {
 	NavPath     string            `json:"navPath"` // frontend route to navigate to
 }
 
-type searchTarget struct {
-	kind    string
-	apiVer  string
-	path    string
-	navFn   func(ns, name string) string
-	fetchFn func(ctx gin.Context, h *Handler, ns, q string) []SearchResult
-}
-
 // GlobalSearch searches across all major resource types concurrently
 func (h *Handler) GlobalSearch(c *gin.Context) {
 	query := strings.TrimSpace(c.Query("q"))
@@ -44,11 +36,6 @@ func (h *Handler) GlobalSearch(c *gin.Context) {
 		return
 	}
 	ctx := c.Request.Context()
-
-	type typeResult struct {
-		kind    string
-		results []SearchResult
-	}
 
 	targets := []struct {
 		kind   string
