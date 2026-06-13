@@ -22,7 +22,6 @@
 [![Helm](https://img.shields.io/badge/Helm-3-0F1689?style=for-the-badge&logo=helm)](https://helm.sh)
 
 [![Docker](https://img.shields.io/badge/GHCR-ghcr.io%2Fselvarajmurugesan90%2Fklarity-2496ED?style=for-the-badge&logo=docker)](https://github.com/selvarajmurugesan90/klarity/pkgs/container/klarity)
-[![Artifact Hub](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/klarity&style=for-the-badge)](https://artifacthub.io/packages/helm/klarity/klarity)
 [![Website](https://img.shields.io/badge/Website-klarity-blue?style=for-the-badge&logo=github)](https://selvarajmurugesan90.github.io/klarity)
 
 <br/>
