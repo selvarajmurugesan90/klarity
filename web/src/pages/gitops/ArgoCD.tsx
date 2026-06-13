@@ -31,7 +31,7 @@ export default function ArgoCD() {
 
   const { data, isLoading, error, refetch, isFetching } = useQuery({
     queryKey: ['argocd-apps', page, search],
-    queryFn: () => api.get(`/api/v1/gitops/argocd/apps?page=${page}&pageSize=50&search=${search}`)
+    queryFn: () => api.get(`/gitops/argocd/apps?page=${page}&pageSize=50&search=${search}`)
       .then(r => r.data),
     refetchInterval: 30_000,
   })

@@ -32,7 +32,7 @@ export default function PortForwarding() {
 
   const { data, isLoading } = useQuery({
     queryKey: ['portforwards'],
-    queryFn: () => api.get('/api/v1/portforward').then(r => r.data?.data ?? []),
+    queryFn: () => api.get('/portforward').then(r => r.data?.data ?? []),
     refetchInterval: 10_000,
   })
 
@@ -40,7 +40,7 @@ export default function PortForwarding() {
 
   const createMutation = useMutation({
     mutationFn: () =>
-      api.post('/api/v1/portforward', {
+      api.post('/portforward', {
         namespace:  form.namespace,
         podName:    form.podName.trim(),
         remotePort: parseInt(form.port),
@@ -66,7 +66,7 @@ export default function PortForwarding() {
   })
 
   const deleteMutation = useMutation({
-    mutationFn: (id: string) => api.delete(`/api/v1/portforward/${id}`),
+    mutationFn: (id: string) => api.delete(`/portforward/${id}`),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['portforwards'] }),
   })
 
