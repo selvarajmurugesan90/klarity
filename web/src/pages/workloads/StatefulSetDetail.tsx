@@ -17,7 +17,7 @@ export default function StatefulSetDetail() {
   const [tab, setTab] = useState<Tab>('overview')
 
   const { data } = useQuery({ queryKey: ['statefulset', namespace, name], queryFn: () => statefulSetsApi.get(namespace!, name!) })
-  const { data: _yamlData } = useQuery({ queryKey: ['statefulset-yaml', namespace, name], queryFn: async () => { const r = await import('@/lib/api'); return r.api.get(`/namespaces/${namespace}/statefulsets/${name}/yaml`).then(rr => rr.data) }, enabled: tab === 'yaml' })
+  useQuery({ queryKey: ['statefulset-yaml', namespace, name], queryFn: async () => { const r = await import('@/lib/api'); return r.api.get(`/namespaces/${namespace}/statefulsets/${name}/yaml`).then(rr => rr.data) }, enabled: tab === 'yaml' })
 
   const res    = data?.data as Record<string,unknown> | undefined
   const spec   = res?.spec   as Record<string,unknown> | undefined

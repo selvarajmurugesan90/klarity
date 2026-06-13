@@ -321,7 +321,7 @@ export default function Login() {
         }
       })
       .catch(() => { setChecking(false) })
-  }, [])
+  }, [logout, setAuthMode, setAuthenticated])
 
   if (checking) {
     return (

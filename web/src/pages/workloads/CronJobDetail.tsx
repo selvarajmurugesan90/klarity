@@ -17,7 +17,7 @@ export default function CronJobDetail() {
   const [tab, setTab] = useState<Tab>('overview')
 
   const { data } = useQuery({ queryKey: ['cronjob', namespace, name], queryFn: () => cronJobsApi.get(namespace!, name!) })
-  const { data: _yamlData } = useQuery({ queryKey: ['cronjob-yaml', namespace, name], queryFn: async () => { const r = await import('@/lib/api'); return r.api.get(`/namespaces/${namespace}/cronjobs/${name}/yaml`).then(rr => rr.data) }, enabled: tab === 'yaml' })
+  useQuery({ queryKey: ['cronjob-yaml', namespace, name], queryFn: async () => { const r = await import('@/lib/api'); return r.api.get(`/namespaces/${namespace}/cronjobs/${name}/yaml`).then(rr => rr.data) }, enabled: tab === 'yaml' })
 
   const cj     = data?.data as Record<string,unknown> | undefined
   const spec   = cj?.spec   as Record<string,unknown> | undefined

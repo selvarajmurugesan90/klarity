@@ -17,7 +17,7 @@ export default function DaemonSetDetail() {
   const [tab, setTab] = useState<Tab>('overview')
 
   const { data } = useQuery({ queryKey: ['daemonset', namespace, name], queryFn: () => daemonSetsApi.get(namespace!, name!) })
-  const { data: _yamlData } = useQuery({ queryKey: ['daemonset-yaml', namespace, name], queryFn: async () => { const r = await import('@/lib/api'); return r.api.get(`/namespaces/${namespace}/daemonsets/${name}/yaml`).then(rr => rr.data) }, enabled: tab === 'yaml' })
+  useQuery({ queryKey: ['daemonset-yaml', namespace, name], queryFn: async () => { const r = await import('@/lib/api'); return r.api.get(`/namespaces/${namespace}/daemonsets/${name}/yaml`).then(rr => rr.data) }, enabled: tab === 'yaml' })
 
   const res    = data?.data as Record<string,unknown> | undefined
   const spec   = res?.spec   as Record<string,unknown> | undefined

@@ -3,16 +3,16 @@ import { useQuery } from '@tanstack/react-query'
 import { useAuthStore } from '@/store/auth'
 import { useClusterStore } from '@/store/cluster'
 import { useSettingsStore } from '@/store/settings'
-import { clusterApi, identityApi } from '@/lib/api'
+import { clusterApi } from '@/lib/api'
 
 const UserManagementPage = lazy(() => import('./UserManagement'))
 import {
   Settings2, User, Shield, Palette, Server, GitBranch, Bell,
   Lock, Info, Save, RotateCcw, Plus, Trash2, Check, AlertTriangle,
-  Eye, EyeOff, Copy, RefreshCw,
-  ChevronRight, ExternalLink,
+  Eye, EyeOff, RefreshCw,
+  ChevronRight,
 } from 'lucide-react'
-import { cn, copyToClipboard } from '@/lib/utils'
+import { cn } from '@/lib/utils'
 
 // ── Reusable form components ──────────────────────────────────────────────────
 

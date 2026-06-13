@@ -9,9 +9,22 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 - Remove duplicated `/api/v1` prefix in frontend API calls — Sidebar, ArgoCD, FluxCD, GitOps Dashboard, Port Forwarding pages were double-prefixing routes since the axios client already sets `baseURL: /api/v1` (contributed by @Raznak, closes #2)
+- Resolve all 66 ESLint `@typescript-eslint/no-unused-vars` errors across 29 frontend files (contributed by @Raznak, closes #4)
+- Fix `react-hooks/exhaustive-deps` warnings in `useKeyboardShortcuts`, `Login`, and `Events` — wrap constant maps in `useMemo`, add proper `useEffect` dependencies
+- Remove unused `_yamlData` destructuring in `CronJobDetail`, `DaemonSetDetail`, `StatefulSetDetail` — YAML tab renders from the primary query via `JSON.stringify`
+- Fix Helm `release.yml` workflow to only update `appVersion` on release tag — `version` (chart structure) is now independent of Docker image releases
+- Remove broken ArtifactHub badge from README — package not yet registered at artifacthub.io
 
 ### Added
 - Make AWS config path configurable via `AWSCONFIG` env var in `docker-compose.yaml` for EKS local dev; add `AWS_CLI_CACHE_DIR` and `AWS_CLI_HISTORY_FILE` to avoid container permission issues (contributed by @chrisjiayoulin, closes #1)
+
+### CI
+- Fix ESLint 9 flat config: replace `.eslintrc` with `web/eslint.config.js`, remove unsupported `--ext` flag
+- Fix CI build order: frontend must be built and copied to `internal/assets/web/dist` before Go lint/test (required by `//go:embed`)
+- Use `npm install` instead of `npm ci` (no `package-lock.json` in repository)
+- Add `--timeout=5m` to golangci-lint to prevent 60s default timeout
+- Add `--passWithNoTests` to vitest for projects without test files
+- Use `GONOSUMDB=* GOFLAGS=-mod=mod` in Docker `go build` for reliable offline-friendly builds
 
 ---
 

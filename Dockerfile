@@ -15,11 +15,11 @@ RUN go mod download || true
 COPY . .
 # Copy frontend build into the embed path expected by internal/assets/assets.go
 COPY --from=frontend-builder /app/web/dist ./internal/assets/web/dist
-RUN GONOSUMDB=* GOFLAGS=-mod=mod go mod tidy
+RUN GONOSUMDB=* GOFLAGS=-mod=mod go mod tidy 2>/dev/null || true
 ARG VERSION=dev
 ARG GIT_COMMIT=unknown
 ARG BUILD_DATE=unknown
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build \
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 GONOSUMDB=* GOFLAGS=-mod=mod go build \
     -ldflags="-s -w -X main.version=${VERSION} -X main.gitCommit=${GIT_COMMIT} -X main.buildDate=${BUILD_DATE}" \
     -o /kubernetes-dashboard ./cmd/server
 

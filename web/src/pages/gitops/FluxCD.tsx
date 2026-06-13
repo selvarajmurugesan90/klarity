@@ -95,8 +95,6 @@ function FluxTable({ tab }: { tab: FluxTab }) {
       key: 'lastApplied', header: 'Last Reconciled',
       cell: (r) => {
         const stat = r.status as Record<string, unknown>
-        const _ts  = stat?.lastHandledReconcileAt as string
-              ?? stat?.observedGeneration as string
         const conds = (stat?.conditions as Array<{ type: string; lastTransitionTime: string }>) ?? []
         const ready = conds.find(c => c.type === 'Ready')
         return <span className="text-xs text-gray-500">{ready?.lastTransitionTime ? formatAge(ready.lastTransitionTime) + ' ago' : '—'}</span>
