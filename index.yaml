@@ -1,0 +1,30 @@
+apiVersion: v1
+entries:
+  klarity:
+  - annotations:
+      artifacthub.io/category: monitoring-logging
+      artifacthub.io/license: Apache-2.0
+    apiVersion: v2
+    appVersion: 1.0.1
+    created: "2026-06-13T10:33:41.80584373Z"
+    description: Enterprise Kubernetes observability dashboard — GitOps-first, read-only
+      by design, with auto-discovery, user management, and GitOps integration
+    digest: 736bbdfc50b90f7a8ca57afe1141a7c639c5c43a22f106ed0a92c1e1161cc5db
+    home: https://github.com/selvarajmurugesan90/klarity
+    keywords:
+    - kubernetes
+    - dashboard
+    - monitoring
+    - management
+    - devops
+    maintainers:
+    - email: opensource@klarity.dev
+      name: Klarity Contributors
+    name: klarity
+    sources:
+    - https://github.com/selvarajmurugesan90/klarity
+    type: application
+    urls:
+    - https://github.com/selvarajmurugesan90/klarity/releases/download/klarity-1.0.1/klarity-1.0.1.tgz
+    version: 1.0.1
+generated: "2026-06-13T10:33:41.805849279Z"
