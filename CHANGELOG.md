@@ -8,7 +8,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [1.0.1] — 2026-06-13
 
 ### Fixed
-- Remove duplicated `/api/v1` prefix in frontend API calls — Sidebar, ArgoCD, FluxCD, GitOps Dashboard, Port Forwarding pages were double-prefixing routes since the axios client already sets `baseURL: /api/v1` (contributed by @chrisjiayoulin, closes #2)
+- Remove duplicated `/api/v1` prefix in frontend API calls — Sidebar, ArgoCD, FluxCD, GitOps Dashboard, Port Forwarding pages were double-prefixing routes since the axios client already sets `baseURL: /api/v1` (contributed by @Raznak, closes #2)
 
 ### Added
 - Make AWS config path configurable via `AWSCONFIG` env var in `docker-compose.yaml` for EKS local dev; add `AWS_CLI_CACHE_DIR` and `AWS_CLI_HISTORY_FILE` to avoid container permission issues (contributed by @chrisjiayoulin, closes #1)
