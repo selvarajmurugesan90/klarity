@@ -5,7 +5,7 @@ import type { SafeUser } from '@/lib/api'
 import { useAuthStore } from '@/store/auth'
 import {
   Users, Plus, Trash2, Edit, Key, Unlock, Shield, Eye, EyeOff,
-  CheckCircle, XCircle, AlertTriangle, RefreshCw, Crown, UserCheck,
+  CheckCircle, XCircle, AlertTriangle, Crown,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { formatAge } from '@/lib/utils'

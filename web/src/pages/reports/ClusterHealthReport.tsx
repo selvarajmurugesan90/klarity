@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { clusterApi, metricsApi, nodesApi } from '@/lib/api'
-import { FileText, Download, CheckCircle, XCircle, AlertTriangle, Server, Box, Activity } from 'lucide-react'
+import { FileText, Download, CheckCircle, XCircle, AlertTriangle, Server } from 'lucide-react'
 import { formatAge } from '@/lib/utils'
 
 function StatCard({ label, value, sub, color = 'blue' }: {

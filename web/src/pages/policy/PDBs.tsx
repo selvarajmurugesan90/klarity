@@ -1,4 +1,4 @@
-import { GenericResourcePage, nameColumn, ageColumn } from '@/components/common/GenericResourcePage'
+import { GenericResourcePage } from '@/components/common/GenericResourcePage'
 import { policyApi } from '@/lib/api'
 type PDB = Record<string, unknown>
 export default function PDBs() {

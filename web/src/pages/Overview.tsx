@@ -5,19 +5,17 @@ import { formatAge } from '@/lib/utils'
 import { StatusBadge } from '@/components/common/StatusBadge'
 import {
   Server, Box, Globe, HardDrive, Layers, AlertTriangle,
-  CheckCircle, XCircle, Activity, Cpu, MemoryStick, ChevronRight,
+  CheckCircle, XCircle, Activity, Cpu, ChevronRight,
   RefreshCw, Database, Zap, Clock,
 } from 'lucide-react'
 import {
   PieChart, Pie, Cell, ResponsiveContainer, Tooltip,
   BarChart, Bar, XAxis, YAxis, CartesianGrid,
-  LineChart, Line,
 } from 'recharts'
 import { cn } from '@/lib/utils'
 
 // ── Palette ───────────────────────────────────────────────────────────────────
 const POD_COLORS   = ['#22c55e', '#eab308', '#3b82f6', '#ef4444', '#94a3b8']
-const POD_LABELS   = ['Running', 'Pending', 'Succeeded', 'Failed', 'Unknown']
 
 // ── Reusable stat card ────────────────────────────────────────────────────────
 function StatCard({

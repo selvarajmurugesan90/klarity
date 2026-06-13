@@ -1,4 +1,4 @@
-import { GenericResourcePage, nameColumn, ageColumn } from '@/components/common/GenericResourcePage'
+import { GenericResourcePage } from '@/components/common/GenericResourcePage'
 import { networkPoliciesApi } from '@/lib/api'
 type NP = Record<string, unknown>
 export default function NetworkPolicies() {

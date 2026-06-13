@@ -3,7 +3,6 @@ import { api } from '@/lib/api'
 import { useNavigate } from 'react-router-dom'
 import { GitBranch, RefreshCw, CheckCircle, XCircle, AlertTriangle, Clock, ChevronRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { formatAge } from '@/lib/utils'
 
 interface GitOpsStatus {
   argocd: { detected: boolean; version?: string }

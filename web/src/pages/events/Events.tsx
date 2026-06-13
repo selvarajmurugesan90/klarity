@@ -51,7 +51,7 @@ export default function Events() {
   })
 
   // Client-side time range filter on lastTimestamp
-  const allEvents = (data?.data ?? []) as KEvent[]
+  const allEvents = useMemo(() => (data?.data ?? []) as KEvent[], [data])
   const events = useMemo(() => {
     if (timeRange === 0) return allEvents
     const cutoff = new Date(Date.now() - timeRange * 60 * 1000)

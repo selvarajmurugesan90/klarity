@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import { api } from '@/lib/api'
 import { ResourceTable, Column } from '@/components/common/ResourceTable'
 import { formatAge } from '@/lib/utils'
-import { GitBranch, CheckCircle, XCircle, AlertTriangle, RefreshCw, Clock } from 'lucide-react'
+import { GitBranch, CheckCircle, XCircle, RefreshCw } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 type FluxResource = Record<string, unknown>
@@ -95,8 +95,6 @@ function FluxTable({ tab }: { tab: FluxTab }) {
       key: 'lastApplied', header: 'Last Reconciled',
       cell: (r) => {
         const stat = r.status as Record<string, unknown>
-        const ts   = stat?.lastHandledReconcileAt as string
-              ?? stat?.observedGeneration as string
         const conds = (stat?.conditions as Array<{ type: string; lastTransitionTime: string }>) ?? []
         const ready = conds.find(c => c.type === 'Ready')
         return <span className="text-xs text-gray-500">{ready?.lastTransitionTime ? formatAge(ready.lastTransitionTime) + ' ago' : '—'}</span>

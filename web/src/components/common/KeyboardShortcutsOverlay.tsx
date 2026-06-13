@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { X, Keyboard } from 'lucide-react'
 import { SHORTCUTS_HELP } from '@/hooks/useKeyboardShortcuts'
-import { cn } from '@/lib/utils'
 
 function KeyBadge({ k }: { k: string }) {
   return (

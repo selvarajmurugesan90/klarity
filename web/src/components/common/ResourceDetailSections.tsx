@@ -5,7 +5,7 @@
  */
 import { useState } from 'react'
 import { ChevronDown, ChevronRight, CheckCircle, XCircle, MinusCircle, Copy, Eye, EyeOff } from 'lucide-react'
-import { cn, copyToClipboard, formatAge } from '@/lib/utils'
+import { cn, copyToClipboard } from '@/lib/utils'
 import { StatusBadge } from './StatusBadge'
 
 // ── Types ──────────────────────────────────────────────────────────────────────
@@ -137,7 +137,7 @@ export function SectionDivider({ label }: { label: string }) {
 
 // ── Security context badges ────────────────────────────────────────────────────
 
-function SecBadge({ label, value, good, warn, inverted = false }: {
+function SecBadge({ label, value, inverted = false }: {
   label: string; value: boolean | undefined | null; good?: boolean; warn?: boolean; inverted?: boolean
 }) {
   const effective = inverted ? !value : value

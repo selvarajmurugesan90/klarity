@@ -1,11 +1,9 @@
-import { useNavigate } from 'react-router-dom'
 import { GenericResourcePage, nameColumn, ageColumn, statusColumn } from '@/components/common/GenericResourcePage'
 import { statefulSetsApi } from '@/lib/api'
 
 type SS = Record<string, unknown>
 
 export default function StatefulSets() {
-  const navigate = useNavigate()
   return (
     <GenericResourcePage<SS>
       title="StatefulSets"

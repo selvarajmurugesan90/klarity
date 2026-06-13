@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import { api } from '@/lib/api'
 import { ResourceTable, Column } from '@/components/common/ResourceTable'
 import { formatAge } from '@/lib/utils'
-import { GitBranch, CheckCircle, XCircle, AlertTriangle, RefreshCw, Clock } from 'lucide-react'
+import { GitBranch, CheckCircle, XCircle, RefreshCw, Clock } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 type App = Record<string, unknown>

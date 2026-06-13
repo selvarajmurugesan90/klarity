@@ -1,5 +1,4 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
-import { useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import Layout from '@/components/layout/Layout'
 import Overview from '@/pages/Overview'

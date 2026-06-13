@@ -9,15 +9,15 @@ import Terminal from '@/components/common/Terminal'
 import YamlEditor from '@/components/common/YamlEditor'
 import {
   ArrowLeft, Box, Pin, Cpu, MemoryStick, RefreshCw, Activity,
-  Container as ContainerIcon, Shield, HardDrive, Network,
-  Tag, AlignJustify, Calendar
+  Container as ContainerIcon, Shield, HardDrive,
+  AlignJustify, Calendar
 } from 'lucide-react'
 import { useActivityStore } from '@/store/activities'
 import { cn } from '@/lib/utils'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts'
 import {
   InfoSection, InfoRow, SecurityContextSection, ContainerResourcesSection,
-  EnvVarsSection, VolumesSection, NetworkingSection, SchedulingSection,
+  EnvVarsSection, VolumesSection, SchedulingSection,
   LabelsAnnotations, OwnerReferences, ContainerCard,
   type K8sContainer, type K8sPodSpec,
 } from '@/components/common/ResourceDetailSections'

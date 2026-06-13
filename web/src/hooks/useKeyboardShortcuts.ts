@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from 'react'
+import { useEffect, useCallback, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 interface ShortcutMap {
@@ -12,7 +12,7 @@ let pendingTimer: ReturnType<typeof setTimeout> | null = null
 export function useKeyboardShortcuts(extraShortcuts?: ShortcutMap) {
   const navigate = useNavigate()
 
-  const navigationChords: Record<string, Record<string, string>> = {
+  const navigationChords: Record<string, Record<string, string>> = useMemo(() => ({
     g: {
       o: '/',
       p: '/pods',
@@ -35,9 +35,9 @@ export function useKeyboardShortcuts(extraShortcuts?: ShortcutMap) {
       h: '/reports',
       '/': '/search',
     },
-  }
+  }), [])
 
-  const singleKeyActions: Record<string, () => void> = {
+  const singleKeyActions: Record<string, () => void> = useMemo(() => ({
     '?': () => {
       // Dispatch a custom event to show the shortcuts overlay
       window.dispatchEvent(new CustomEvent('kd:toggle-shortcuts'))
@@ -45,7 +45,7 @@ export function useKeyboardShortcuts(extraShortcuts?: ShortcutMap) {
     Escape: () => {
       window.dispatchEvent(new CustomEvent('kd:close-modal'))
     },
-  }
+  }), [])
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
@@ -97,7 +97,7 @@ export function useKeyboardShortcuts(extraShortcuts?: ShortcutMap) {
 
       pendingKey = null
     },
-    [navigate, extraShortcuts]
+    [navigate, extraShortcuts, navigationChords, singleKeyActions]
   )
 
   useEffect(() => {

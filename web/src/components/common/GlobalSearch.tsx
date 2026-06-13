@@ -1,10 +1,9 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { searchApi } from '@/lib/api'
 import { Search, Box, Globe, Server, Database, FileCode, Key, Layers, X, ArrowRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { formatAge } from '@/lib/utils'
 
 const KIND_ICONS: Record<string, React.ReactNode> = {
   Pod: <Box size={14} className="text-green-400" />,
@@ -53,13 +52,13 @@ export default function GlobalSearch() {
     staleTime: 5000,
   })
 
-  const results = (data?.data as SearchResult[] | undefined) ?? []
+  const results = useMemo(() => (data?.data as SearchResult[] | undefined) ?? [], [data])
 
-  function navigate_to(path: string) {
+  const navigate_to = useCallback((path: string) => {
     navigate(path)
     setOpen(false)
     setQuery('')
-  }
+  }, [navigate])
 
   const handleKey = useCallback((e: React.KeyboardEvent) => {
     if (e.key === 'ArrowDown') {
@@ -74,7 +73,7 @@ export default function GlobalSearch() {
       setOpen(false)
       setQuery('')
     }
-  }, [results, selected])
+  }, [results, selected, navigate_to])
 
   useEffect(() => { setSelected(0) }, [results.length])
 
@@ -138,7 +137,7 @@ export default function GlobalSearch() {
                       {KIND_ICONS[kind] ?? KIND_ICONS.default}
                       {kind}
                     </div>
-                    {kindResults.map((result, globalIdx) => {
+                    {kindResults.map((result) => {
                       const idx = results.indexOf(result)
                       return (
                         <button

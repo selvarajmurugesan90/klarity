@@ -1,4 +1,4 @@
-import { GenericResourcePage, nameColumn, ageColumn } from '@/components/common/GenericResourcePage'
+import { GenericResourcePage } from '@/components/common/GenericResourcePage'
 import { configApi } from '@/lib/api'
 type SA = Record<string, unknown>
 export default function ServiceAccounts() {
