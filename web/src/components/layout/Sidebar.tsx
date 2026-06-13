@@ -200,7 +200,7 @@ export default function Sidebar() {
   // Warning event count badge
   const { data: warnCount } = useQuery({
     queryKey: ['sidebar-warn-count'],
-    queryFn: () => api.get('/api/v1/events?type=Warning&pageSize=1')
+    queryFn: () => api.get('/events?type=Warning&pageSize=1')
       .then(r => (r.data?.total as number) ?? 0),
     refetchInterval: 30_000,
   })

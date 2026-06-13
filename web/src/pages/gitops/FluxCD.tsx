@@ -11,10 +11,10 @@ type FluxResource = Record<string, unknown>
 type FluxTab = 'kustomizations' | 'helmreleases' | 'gitrepositories' | 'helmrepositories'
 
 const TABS: { id: FluxTab; label: string; endpoint: string }[] = [
-  { id: 'kustomizations',    label: 'Kustomizations',     endpoint: '/api/v1/gitops/flux/kustomizations'    },
-  { id: 'helmreleases',      label: 'Helm Releases',      endpoint: '/api/v1/gitops/flux/helmreleases'      },
-  { id: 'gitrepositories',   label: 'Git Repositories',   endpoint: '/api/v1/gitops/flux/gitrepositories'   },
-  { id: 'helmrepositories',  label: 'Helm Repositories',  endpoint: '/api/v1/gitops/flux/helmrepositories'  },
+  { id: 'kustomizations',    label: 'Kustomizations',     endpoint: '/gitops/flux/kustomizations'    },
+  { id: 'helmreleases',      label: 'Helm Releases',      endpoint: '/gitops/flux/helmreleases'      },
+  { id: 'gitrepositories',   label: 'Git Repositories',   endpoint: '/gitops/flux/gitrepositories'   },
+  { id: 'helmrepositories',  label: 'Helm Repositories',  endpoint: '/gitops/flux/helmrepositories'  },
 ]
 
 function ReadyBadge({ conditions }: { conditions: Array<{ type: string; status: string; message?: string }> }) {
