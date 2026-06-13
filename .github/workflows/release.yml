@@ -140,10 +140,9 @@ jobs:
         with:
           version: v3.16.0
 
-      - name: Sync chart version with release tag
+      - name: Sync appVersion with release tag
         run: |
           VERSION="${{ needs.resolve-version.outputs.version }}"
-          sed -i "s/^version:.*/version: ${VERSION}/" helm/klarity/Chart.yaml
           sed -i "s/^appVersion:.*/appVersion: \"${VERSION}\"/" helm/klarity/Chart.yaml
 
       - name: Publish chart to GitHub Pages
