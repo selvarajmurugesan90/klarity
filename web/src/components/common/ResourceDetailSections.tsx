@@ -137,8 +137,8 @@ export function SectionDivider({ label }: { label: string }) {
 
 // ── Security context badges ────────────────────────────────────────────────────
 
-function SecBadge({ label, value, _good, _warn, inverted = false }: {
-  label: string; value: boolean | undefined | null; _good?: boolean; _warn?: boolean; inverted?: boolean
+function SecBadge({ label, value, inverted = false }: {
+  label: string; value: boolean | undefined | null; inverted?: boolean
 }) {
   const effective = inverted ? !value : value
   const isGood    = value === undefined || value === null ? null : effective

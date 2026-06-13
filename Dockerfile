@@ -4,6 +4,7 @@ WORKDIR /app/web
 COPY web/package*.json ./
 RUN npm install
 COPY web/ ./
+RUN npm run lint
 RUN npm run build
 
 # ── Stage 2: Build Go backend ──────────────────────────────────────────────────

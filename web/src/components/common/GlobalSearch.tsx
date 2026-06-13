@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { searchApi } from '@/lib/api'
@@ -53,7 +53,7 @@ export default function GlobalSearch() {
     staleTime: 5000,
   })
 
-  const results = (data?.data as SearchResult[] | undefined) ?? []
+  const results = useMemo(() => (data?.data as SearchResult[] | undefined) ?? [], [data])
 
   function navigate_to(path: string) {
     navigate(path)
@@ -69,12 +69,14 @@ export default function GlobalSearch() {
       e.preventDefault()
       setSelected(s => Math.max(s - 1, 0))
     } else if (e.key === 'Enter' && results[selected]) {
-      navigate_to(results[selected].navPath)
+      navigate(results[selected].navPath)
+      setOpen(false)
+      setQuery('')
     } else if (e.key === 'Escape') {
       setOpen(false)
       setQuery('')
     }
-  }, [results, selected])
+  }, [navigate, results, selected])
 
   useEffect(() => { setSelected(0) }, [results.length])
 
@@ -138,7 +140,7 @@ export default function GlobalSearch() {
                       {KIND_ICONS[kind] ?? KIND_ICONS.default}
                       {kind}
                     </div>
-                    {kindResults.map((result, _globalIdx) => {
+                    {kindResults.map((result) => {
                       const idx = results.indexOf(result)
                       return (
                         <button
